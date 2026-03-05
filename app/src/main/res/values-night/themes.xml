@@ -1,7 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.PasswordDisk" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/blue</item>
-        <item name="colorPrimaryDark">@color/blue</item>
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/teal_200</item>
         <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
         <item name="android:windowBackground">@color/background</item>
@@ -10,15 +11,15 @@
     </style>
 
     <style name="BottomNavStyle" parent="Widget.Material3.BottomNavigationView">
-        <item name="android:background">@color/white</item>
+        <item name="android:background">@color/background</item>
         <item name="itemActiveIndicatorStyle">@style/BottomNavIndicatorStyle</item>
     </style>
 
     <style name="BottomNavIndicatorStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">#E0E0E0</item>
+        <item name="android:color">#2C2C2C</item>
     </style>
 
     <style name="CardStyle" parent="Widget.Material3.CardView.Elevated">
-        <item name="cardBackgroundColor">#F5F5F5</item>
+        <item name="cardBackgroundColor">#1E1E1E</item>
     </style>
 </resources>
