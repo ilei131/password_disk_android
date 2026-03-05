@@ -69,9 +69,18 @@
             android:id="@+id/action_settings_to_cloudSync"
             app:destination="@id/cloudSyncFragment" />
         <action
+            android:id="@+id/action_settings_to_backupToCloud"
+            app:destination="@id/backupToCloudFragment" />
+        <action
             android:id="@+id/action_settings_to_totp"
             app:destination="@id/totpFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/backupToCloudFragment"
+        android:name="com.passworddisk.app.ui.BackupToCloudFragment"
+        android:label="Backup to Cloud"
+        tools:layout="@layout/fragment_backup_to_cloud" />
 
     <fragment
         android:id="@+id/categoriesFragment"

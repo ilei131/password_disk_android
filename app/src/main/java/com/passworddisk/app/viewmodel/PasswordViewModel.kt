@@ -231,10 +231,45 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
     fun syncCloud(username: String, password: String) {
         viewModelScope.launch {
             val result = CloudSyncManager.sync(username, password)
-            result.onSuccess { 
-                _successMessage.value = "Synced successfully"
+            result.onSuccess { response -> 
+                // 处理返回的密码数据
+                if (response.backup != null) {
+                    // 使用返回的备份数据恢复密码库
+                    val restoreSuccess = repository.restoreVault(response.backup)
+                    if (restoreSuccess) {
+                        // 同步成功后，强制用户重新登录以获取新的 masterKey
+                        _isAuthenticated.value = false
+                        _successMessage.value = "Synced successfully. Please login again to access your passwords."
+                    } else {
+                        _errorMessage.value = "Failed to restore vault from sync"
+                    }
+                } else {
+                    _successMessage.value = "Synced successfully"
+                }
             }.onFailure { 
                 _errorMessage.value = it.message
+            }
+        }
+    }
+
+    fun backupToCloud(username: String, password: String) {
+        viewModelScope.launch {
+            try {
+                // 获取本地备份数据
+                val backup = repository.getVaultBackup()
+                if (backup != null) {
+                    // 使用 login 接口上传备份数据
+                    val result = CloudSyncManager.login(username, password, backup)
+                    result.onSuccess { 
+                        _successMessage.value = "Backup to cloud successful"
+                    }.onFailure { 
+                        _errorMessage.value = it.message
+                    }
+                } else {
+                    _errorMessage.value = "Failed to create backup"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to backup to cloud"
             }
         }
     }

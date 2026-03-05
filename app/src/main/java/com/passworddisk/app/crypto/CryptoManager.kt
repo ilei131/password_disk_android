@@ -37,33 +37,72 @@ object CryptoManager {
     fun deriveKey(masterPassword: String, salt: String): ByteArray {
         val digest = MessageDigest.getInstance("SHA-256")
         digest.update(masterPassword.toByteArray(Charsets.UTF_8))
-        digest.update(salt.fromHex())
-        return digest.digest()
+        try {
+            // 尝试将 salt 作为十六进制字符串解码，与 Rust 代码保持一致
+            val saltBytes = salt.fromHex()
+            println("Salt decoded successfully: ${saltBytes.size} bytes, salt: $salt")
+            digest.update(saltBytes)
+        } catch (e: Exception) {
+            // 如果解码失败，打印错误信息
+            println("Salt decoding failed: ${e.message}, salt: $salt")
+            throw e
+        }
+        val key = digest.digest()
+        println("Generated key: ${key.toHex().take(10)}...")
+        return key
     }
 
     fun encryptData(data: String, key: ByteArray): String {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        // 使用 ECB 模式，与 Rust 代码保持一致
+        val cipher = Cipher.getInstance("AES/ECB/NoPadding")
+        val secretKey = SecretKeySpec(key, "AES")
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        
+        // 手动添加填充，与 Rust 代码保持一致
+        val dataBytes = data.toByteArray(Charsets.UTF_8)
+        val paddingSize = 16 - (dataBytes.size % 16)
+        val paddedData = ByteArray(dataBytes.size + paddingSize)
+        System.arraycopy(dataBytes, 0, paddedData, 0, dataBytes.size)
+        for (i in dataBytes.size until paddedData.size) {
+            paddedData[i] = paddingSize.toByte()
+        }
+        
+        val encrypted = cipher.doFinal(paddedData)
+        
+        // 生成 16 字节的随机 IV 并添加到加密数据的前面，与 Rust 代码保持一致
         val iv = ByteArray(16)
         SecureRandom().nextBytes(iv)
-        val ivSpec = IvParameterSpec(iv)
-        val secretKey = SecretKeySpec(key, "AES")
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec)
-        val encrypted = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
-        return (iv + encrypted).toHex()
+        val result = ByteArray(iv.size + encrypted.size)
+        System.arraycopy(iv, 0, result, 0, iv.size)
+        System.arraycopy(encrypted, 0, result, iv.size, encrypted.size)
+        
+        return result.toHex()
     }
 
     fun decryptData(encryptedData: String, key: ByteArray): String {
+        // 使用 ECB 模式，与 Rust 代码保持一致
         val encryptedBytes = encryptedData.fromHex()
-        if (encryptedBytes.size < 16) {
-            throw IllegalArgumentException("Encrypted data too short")
+        
+        // 跳过前 16 个字节的 IV，与 Rust 代码保持一致
+        val ciphertext = if (encryptedBytes.size >= 16) {
+            encryptedBytes.copyOfRange(16, encryptedBytes.size)
+        } else {
+            encryptedBytes
         }
-        val iv = encryptedBytes.copyOfRange(0, 16)
-        val ciphertext = encryptedBytes.copyOfRange(16, encryptedBytes.size)
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val ivSpec = IvParameterSpec(iv)
+        
+        val cipher = Cipher.getInstance("AES/ECB/NoPadding")
         val secretKey = SecretKeySpec(key, "AES")
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
+        cipher.init(Cipher.DECRYPT_MODE, secretKey)
         val decrypted = cipher.doFinal(ciphertext)
+        
+        // 手动处理填充，与 Rust 代码保持一致
+        if (decrypted.isNotEmpty()) {
+            val paddingSize = decrypted.last().toInt()
+            if (paddingSize > 0 && paddingSize <= 16) {
+                return String(decrypted.copyOfRange(0, decrypted.size - paddingSize), Charsets.UTF_8)
+            }
+        }
+        
         return String(decrypted, Charsets.UTF_8)
     }
 

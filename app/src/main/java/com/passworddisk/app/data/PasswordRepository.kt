@@ -1,9 +1,39 @@
 package com.passworddisk.app.data
 
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.passworddisk.app.crypto.CryptoManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import java.util.UUID
+
+// 辅助数据类，用于解析 JSON 数据
+private data class CloudBackup(
+    val master_password_hash: String,
+    val salt: String,
+    val passwords: List<CloudPassword>,
+    val categories: List<CloudCategory>
+)
+
+private data class CloudPassword(
+    val id: String,
+    val title: String,
+    val username: String,
+    val password: String,
+    val url: String,
+    val notes: String,
+    val category: String,
+    @SerializedName("created_at")
+    val createdAt: Long,
+    @SerializedName("updated_at")
+    val updatedAt: Long
+)
+
+private data class CloudCategory(
+    val id: String,
+    val name: String,
+    val icon: String
+)
 
 class PasswordRepository(
     private val passwordDao: PasswordDao,
@@ -89,7 +119,7 @@ class PasswordRepository(
             id = id,
             title = title,
             username = username,
-            encryptedPassword = encryptedPassword,
+            password = encryptedPassword,
             url = url,
             notes = notes,
             categoryId = categoryId,
@@ -108,7 +138,7 @@ class PasswordRepository(
         val encryptedPassword = CryptoManager.encryptData(plainPassword, key)
 
         val updatedItem = passwordItem.copy(
-            encryptedPassword = encryptedPassword,
+            password = encryptedPassword,
             updatedAt = currentTime
         )
 
@@ -167,8 +197,8 @@ class PasswordRepository(
 
         val passwordsJson = passwords.joinToString(",") {
             String.format(
-                "{\"id\":\"%s\",\"title\":\"%s\",\"username\":\"%s\",\"encryptedPassword\":\"%s\",\"url\":\"%s\",\"notes\":\"%s\",\"categoryId\":\"%s\",\"createdAt\":%d,\"updatedAt\":%d}",
-                it.id, it.title, it.username, it.encryptedPassword, it.url, it.notes, it.categoryId, it.createdAt, it.updatedAt
+                "{\"id\":\"%s\",\"title\":\"%s\",\"username\":\"%s\",\"password\":\"%s\",\"url\":\"%s\",\"notes\":\"%s\",\"categoryId\":\"%s\",\"created_at\":%d,\"updated_at\":%d}",
+                it.id, it.title, it.username, it.password, it.url, it.notes, it.categoryId, it.createdAt, it.updatedAt
             )
         }
 
@@ -192,11 +222,68 @@ class PasswordRepository(
             categoryDao.deleteAllCategories()
             vaultSettingsDao.deleteAll()
 
-            // Parse and restore data
-            // This is a simplified implementation
-            // In a real app, you would parse the JSON properly
+            // Parse JSON data
+            val gson = Gson()
+            val backup = gson.fromJson(backupJson, CloudBackup::class.java)
+
+            // Log backup data
+            println("Backup data received: passwords count = ${backup.passwords.size}, categories count = ${backup.categories.size}")
+//            backup.passwords.forEachIndexed { index, password ->
+//                println("Password $index: id=${password.id}, title=${password.title}, username=${password.username}, password=${password.password?.take(10)}..., category=${password.category}")
+//            }
+
+            // Restore categories
+            val categoryMap = mutableMapOf<String, String>() // category name to id mapping
+            backup.categories.forEach { cloudCategory ->
+                val category = Category(
+                    id = cloudCategory.id,
+                    name = cloudCategory.name,
+                    icon = cloudCategory.icon
+                )
+                categoryDao.insertCategory(category)
+                categoryMap[cloudCategory.name] = cloudCategory.id
+                println("Added category: ${cloudCategory.name} (${cloudCategory.id})")
+            }
+
+            // Restore passwords
+            backup.passwords.forEach { cloudPassword ->
+                // Get category ID from category name
+                val categoryId = categoryMap[cloudPassword.category] ?: "1" // Default to "所有"
+                println("Processing password: ${cloudPassword.title}, category=${cloudPassword.category}, categoryId=$categoryId")
+                
+                val passwordItem = PasswordItem(
+                    id = cloudPassword.id,
+                    title = cloudPassword.title,
+                    username = cloudPassword.username,
+                    password = cloudPassword.password, // 直接使用返回的加密密码
+                    url = cloudPassword.url,
+                    notes = cloudPassword.notes,
+                    categoryId = categoryId,
+                    createdAt = cloudPassword.createdAt,
+                    updatedAt = cloudPassword.updatedAt
+                )
+                passwordDao.insertPassword(passwordItem)
+                println("Added password: ${passwordItem.title}, encryptedPassword=${passwordItem.password?.take(10)}...")
+            }
+
+            // Restore settings
+            val settings = VaultSettings(
+                masterPasswordHash = backup.master_password_hash,
+                salt = backup.salt,
+                initialized = true
+            )
+            vaultSettingsDao.insertSettings(settings)
+
+            // Update master key and salt
+            this.salt = backup.salt
+            // Note: We don't have the master password here, so masterKey remains null
+            // The user will need to login again to get the master key
+
+            println("Restore completed successfully")
             true
         } catch (e: Exception) {
+            e.printStackTrace()
+            println("Restore failed: ${e.message}")
             false
         }
     }

@@ -72,40 +72,11 @@
                     android:text="@string/cloud_sync_settings"
                     android:layout_marginTop="8dp" />
 
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/backup_restore"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/backupButton"
+                    android:id="@+id/backupToCloudButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/backup_vault"
-                    android:layout_marginTop="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/restoreButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/restore_vault"
+                    android:text="备份至云端"
                     android:layout_marginTop="8dp" />
 
             </LinearLayout>

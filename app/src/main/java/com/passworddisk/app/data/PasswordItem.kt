@@ -9,7 +9,7 @@ data class PasswordItem(
     val id: String,
     val title: String,
     val username: String,
-    val encryptedPassword: String,
+    val password: String,
     val url: String,
     val notes: String,
     val categoryId: String,

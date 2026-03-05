@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/cloud_sync"
+            android:text="备份至云端"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -48,15 +48,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cloud_sync"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="24dp"
-                android:visibility="gone" />
 
             <!-- 输入框始终显示 -->
             <com.google.android.material.textfield.TextInputLayout
@@ -104,45 +95,34 @@
                     android:text="@string/register"
                     android:layout_marginTop="24dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/loginButton"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/login"
-                    android:layout_marginTop="8dp" />
-
             </LinearLayout>
 
-            <!-- 同步按钮 -->
+            <!-- 备份按钮 -->
             <LinearLayout
-                android:id="@+id/syncLayout"
+                android:id="@+id/backupLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/syncButton"
+                    android:id="@+id/backupButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/sync_now"
-                    android:layout_marginTop="24dp"
-                    app:icon="@drawable/ic_launcher_foreground"
-                    app:iconGravity="end"
-                    app:iconPadding="8dp" />
-
-                <TextView
-                    android:id="@+id/registerHint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="没有账号？"
-                    android:layout_marginTop="16dp"
-                    android:textColor="?attr/colorPrimary"
-                    android:clickable="true"
-                    android:focusable="true" />
+                    android:text="备份至云端"
+                    android:layout_marginTop="24dp" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/registerHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="没有账号？"
+                android:layout_marginTop="16dp"
+                android:textColor="?attr/colorPrimary"
+                android:clickable="true"
+                android:focusable="true" />
 
         </LinearLayout>
     </ScrollView>

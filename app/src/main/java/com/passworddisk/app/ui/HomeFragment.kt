@@ -214,6 +214,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun filterPasswords() {
+        passwords.forEachIndexed { index, password ->
+            println("Password $index: id=${password.id}, title=${password.title}, username=${password.username}, password=${password.password?.take(10)}..., category=${password.categoryId}")
+        }
         val filtered = if (currentCategoryId == "1") {
             passwords
         } else {
@@ -225,7 +228,7 @@ class HomeFragment : Fragment() {
 
     private fun showPasswordDetails(password: PasswordItem) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val decryptedPassword = viewModel.decryptPassword(password.encryptedPassword)
+            val decryptedPassword = viewModel.decryptPassword(password.password)
             decryptedPassword?.let {
                 val dialog = MaterialAlertDialogBuilder(requireContext())
                     .setTitle(password.title)
@@ -247,7 +250,7 @@ class HomeFragment : Fragment() {
 
     private fun copyPassword(password: PasswordItem) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val decryptedPassword = viewModel.decryptPassword(password.encryptedPassword)
+            val decryptedPassword = viewModel.decryptPassword(password.password)
             decryptedPassword?.let {
                 copyToClipboard(it)
             }

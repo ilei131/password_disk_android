@@ -61,7 +61,7 @@ class EditPasswordFragment : Fragment() {
                     binding.urlInput.setText(it.url)
                     binding.notesInput.setText(it.notes)
 
-                    decryptedPassword = viewModel.decryptPassword(it.encryptedPassword) ?: ""
+                    decryptedPassword = viewModel.decryptPassword(it.password) ?: ""
                     binding.passwordInput.setText(decryptedPassword)
                 }
             }

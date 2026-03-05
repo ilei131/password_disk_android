@@ -43,39 +43,12 @@ class SettingsFragment : Fragment() {
             findNavController().navigate(R.id.action_settings_to_cloudSync)
         }
 
-        binding.backupButton.setOnClickListener {
-            showBackupDialog()
-        }
-
-        binding.restoreButton.setOnClickListener {
-            showRestoreDialog()
+        binding.backupToCloudButton.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_backupToCloud)
         }
     }
 
-    private fun showBackupDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Backup Vault")
-            .setMessage("This feature will export your vault data. Make sure to store it securely.")
-            .setPositiveButton("Export") { _, _ ->
-                viewModel.backupVault()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
 
-    private fun showRestoreDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Restore Vault")
-            .setMessage("This will replace your current vault with the backup data.")
-            .setPositiveButton("Import") { _, _ ->
-                // In a real app, you would open a file picker to select the backup file
-                // For now, we'll just show a success message
-                val dummyBackup = "{\"master_password_hash\":\"dummy\",\"salt\":\"dummy\",\"passwords\":[],\"categories\":[]}"
-                viewModel.restoreVault(dummyBackup)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
 
     private fun observeData() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->

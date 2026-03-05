@@ -8,13 +8,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.passworddisk.app.R
-import com.passworddisk.app.databinding.FragmentCloudSyncBinding
+import com.passworddisk.app.databinding.FragmentBackupToCloudBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
 
-class CloudSyncFragment : Fragment() {
-    private var _binding: FragmentCloudSyncBinding? = null
+class BackupToCloudFragment : Fragment() {
+    private var _binding: FragmentBackupToCloudBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PasswordViewModel by activityViewModels()
 
@@ -23,7 +21,7 @@ class CloudSyncFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCloudSyncBinding.inflate(inflater, container, false)
+        _binding = FragmentBackupToCloudBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -40,8 +38,17 @@ class CloudSyncFragment : Fragment() {
         }
 
         binding.registerHint.setOnClickListener {
-            binding.syncLayout.visibility = View.GONE
-            binding.authButtons.visibility = View.VISIBLE
+            if (binding.registerHint.text.toString() == "没有账号？") {
+                // 切换到注册界面
+                binding.backupLayout.visibility = View.GONE
+                binding.authButtons.visibility = View.VISIBLE
+                binding.registerHint.text = "已有账号？"
+            } else {
+                // 切换回备份界面
+                binding.authButtons.visibility = View.GONE
+                binding.backupLayout.visibility = View.VISIBLE
+                binding.registerHint.text = "没有账号？"
+            }
         }
 
         binding.registerButton.setOnClickListener {
@@ -56,19 +63,7 @@ class CloudSyncFragment : Fragment() {
             viewModel.registerCloud(username, password)
         }
 
-//        binding.loginButton.setOnClickListener {
-//            val username = binding.usernameInput.text.toString().trim()
-//            val password = binding.passwordInput.text.toString()
-//
-//            if (username.isEmpty() || password.isEmpty()) {
-//                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//
-//            viewModel.loginCloud(username, password)
-//        }
-
-        binding.syncButton.setOnClickListener {
+        binding.backupButton.setOnClickListener {
             val username = binding.usernameInput.text.toString().trim()
             val password = binding.passwordInput.text.toString()
 
@@ -78,11 +73,11 @@ class CloudSyncFragment : Fragment() {
             }
 
             // 显示加载状态
-            binding.syncButton.isEnabled = false
-            binding.syncButton.text = "Syncing..."
-            binding.syncButton.icon = null // 移除图标
+            binding.backupButton.isEnabled = false
+            binding.backupButton.text = "Backing up..."
 
-            viewModel.syncCloud(username, password)
+            // 先获取本地备份数据，然后上传到云端
+            viewModel.backupToCloud(username, password)
         }
     }
 
@@ -90,20 +85,20 @@ class CloudSyncFragment : Fragment() {
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
                 // 重置按钮状态
-                binding.syncButton.isEnabled = true
-                binding.syncButton.text = getString(R.string.sync_now)
-                binding.syncButton.icon = null // 恢复图标
+                binding.backupButton.isEnabled = true
+                binding.backupButton.text = "备份至云端"
                 
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
                 
-                // 注册成功后返回同步界面
-                if (it.contains("Register")) {
+                // 注册成功后返回备份界面
+                if (it.contains("Registered")) {
                     binding.authButtons.visibility = View.GONE
-                    binding.syncLayout.visibility = View.VISIBLE
+                    binding.backupLayout.visibility = View.VISIBLE
+                    binding.registerHint.text = "没有账号？"
                 } 
-                // 同步成功后关闭当前页面
-                else if (it.contains("Sync")) {
+                // 备份成功后关闭当前页面
+                else if (it.contains("Backup")) {
                     // 关闭当前页面，返回上一页
                     findNavController().navigateUp()
                 }
@@ -113,9 +108,8 @@ class CloudSyncFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
                 // 重置按钮状态
-                binding.syncButton.isEnabled = true
-                binding.syncButton.text = getString(R.string.sync_now)
-                binding.syncButton.icon = null // 恢复图标
+                binding.backupButton.isEnabled = true
+                binding.backupButton.text = "备份至云端"
                 
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()

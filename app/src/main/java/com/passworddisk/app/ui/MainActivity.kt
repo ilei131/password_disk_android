@@ -18,12 +18,12 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNavigationView.setupWithNavController(navController)
 
-        // Hide bottom nav bar on auth, add password, totp, categories, and cloud sync fragments
+        // Hide bottom nav bar on auth, add password, totp, categories, cloud sync, and backup to cloud fragments
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.authFragment, R.id.addPasswordFragment, R.id.totpFragment, R.id.editPasswordFragment, R.id.categoriesFragment, R.id.cloudSyncFragment -> 
-                    bottomNavigationView.visibility = BottomNavigationView.GONE
-                else -> bottomNavigationView.visibility = BottomNavigationView.VISIBLE
+                R.id.homeFragment, R.id.settingsFragment ->
+                    bottomNavigationView.visibility = BottomNavigationView.VISIBLE
+                else -> bottomNavigationView.visibility = BottomNavigationView.GONE
             }
         }
     }
