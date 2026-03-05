@@ -20,20 +20,28 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Icon (Emoji)"
         android:layout_marginTop="16dp"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+        android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/categoryIconInput"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLength="2" />
+            android:text="Select Icon"
+            android:textSize="14sp"
+            android:textColor="?android:attr/textColorSecondary" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/categoryIconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="📁"
+            android:textSize="24sp"
+            android:padding="12dp" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.passworddisk.app.databinding.FragmentCloudSyncBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
 
@@ -32,6 +33,10 @@ class CloudSyncFragment : Fragment() {
     }
 
     private fun setupButtons() {
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.registerButton.setOnClickListener {
             val username = binding.usernameInput.text.toString().trim()
             val password = binding.passwordInput.text.toString()

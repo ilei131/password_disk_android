@@ -32,9 +32,9 @@ object TotpGenerator {
         val binary = ((hash[offset].toInt() and 0x7F) shl 24 or
                 (hash[offset + 1].toInt() and 0xFF) shl 16 or
                 (hash[offset + 2].toInt() and 0xFF) shl 8 or
-                (hash[offset + 3].toInt() and 0xFF))
+                (hash[offset + 3].toInt() and 0xFF)) and 0x7FFFFFFF
 
-        val otp = binary % Math.pow(10.0, CODE_DIGITS.toDouble()).toInt()
-        return otp.toString().padStart(CODE_DIGITS, '0')
+        val otp = binary % 1000000
+        return String.format("%06d", otp)
     }
 }

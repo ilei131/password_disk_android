@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao {
-    @Query("SELECT * FROM categories ORDER BY name")
+    @Query("SELECT * FROM categories ORDER BY CASE WHEN id = '1' THEN 0 ELSE 1 END, name")
     fun getAllCategories(): Flow<List<Category>>
 
     @Query("SELECT * FROM categories WHERE id = :id")

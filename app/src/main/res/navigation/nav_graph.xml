@@ -32,6 +32,9 @@
             android:id="@+id/action_home_to_settings"
             app:destination="@id/settingsFragment" />
         <action
+            android:id="@+id/action_home_to_totp"
+            app:destination="@id/totpFragment" />
+        <action
             android:id="@+id/action_home_to_auth"
             app:destination="@id/authFragment"
             app:popUpTo="@id/homeFragment"

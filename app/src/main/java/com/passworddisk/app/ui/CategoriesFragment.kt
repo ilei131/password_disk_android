@@ -60,6 +60,10 @@ class CategoriesFragment : Fragment() {
         binding.fabAdd.setOnClickListener {
             showAddCategoryDialog()
         }
+
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun observeData() {
@@ -83,18 +87,24 @@ class CategoriesFragment : Fragment() {
     private fun showAddCategoryDialog() {
         val dialogView = layoutInflater.inflate(com.passworddisk.app.R.layout.dialog_category, null)
         val nameInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(com.passworddisk.app.R.id.categoryNameInput)
-        val iconInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(com.passworddisk.app.R.id.categoryIconInput)
+        val iconButton = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(com.passworddisk.app.R.id.categoryIconButton)
 
-        iconInput.setText("")
+        var selectedIcon = "📁"
+
+        iconButton.setOnClickListener {
+            showIconSelector { icon ->
+                selectedIcon = icon
+                iconButton.text = icon
+            }
+        }
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Add Category")
             .setView(dialogView)
             .setPositiveButton("Add") { _, _ ->
                 val name = nameInput.text.toString().trim()
-                val icon = iconInput.text.toString().trim().ifEmpty { "📁" }
                 if (name.isNotEmpty()) {
-                    viewModel.addCategory(name, icon)
+                    viewModel.addCategory(name, selectedIcon)
                 }
             }
             .setNegativeButton("Cancel", null)
@@ -104,20 +114,45 @@ class CategoriesFragment : Fragment() {
     private fun showEditCategoryDialog(category: Category) {
         val dialogView = layoutInflater.inflate(com.passworddisk.app.R.layout.dialog_category, null)
         val nameInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(com.passworddisk.app.R.id.categoryNameInput)
-        val iconInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(com.passworddisk.app.R.id.categoryIconInput)
+        val iconButton = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(com.passworddisk.app.R.id.categoryIconButton)
 
+        var selectedIcon = category.icon
         nameInput.setText(category.name)
-        iconInput.setText(category.icon)
+        iconButton.text = category.icon
+
+        iconButton.setOnClickListener {
+            showIconSelector { icon ->
+                selectedIcon = icon
+                iconButton.text = icon
+            }
+        }
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Edit Category")
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
                 val name = nameInput.text.toString().trim()
-                val icon = iconInput.text.toString().trim().ifEmpty { "📁" }
                 if (name.isNotEmpty()) {
-                    viewModel.updateCategory(category.copy(name = name, icon = icon))
+                    viewModel.updateCategory(category.copy(name = name, icon = selectedIcon))
                 }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showIconSelector(onIconSelected: (String) -> Unit) {
+        val icons = listOf(
+            "📁", "👤", "💼", "💰", "📱", "🏠", "🔒", "📧",
+            "🌐", "🎮", "📚", "🎨", "🔧", "🚗", "✈️", "⚡"
+        )
+
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, icons)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Select Icon")
+            .setAdapter(adapter) { dialog, position ->
+                onIconSelected(icons[position])
+                dialog.dismiss()
             }
             .setNegativeButton("Cancel", null)
             .show()

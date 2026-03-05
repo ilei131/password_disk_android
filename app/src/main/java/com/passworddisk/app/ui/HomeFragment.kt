@@ -96,6 +96,18 @@ class HomeFragment : Fragment() {
         val popupMenu = PopupMenu(requireContext(), binding.fabAdd)
         popupMenu.inflate(R.menu.menu_fab)
         
+        // Force show icons
+        try {
+            val field = PopupMenu::class.java.getDeclaredField("mPopup")
+            field.isAccessible = true
+            val menuPopupHelper = field.get(popupMenu)
+            val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+            val setForceShowIcon = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.java)
+            setForceShowIcon.invoke(menuPopupHelper, true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_add_password -> {
@@ -103,18 +115,11 @@ class HomeFragment : Fragment() {
                     true
                 }
                 R.id.action_add_category -> {
-                    findNavController().navigate(R.id.action_home_to_settings)
-                    // In a real app, we would navigate directly to the add category screen
+                    showAddCategoryDialog()
                     true
                 }
                 R.id.action_totp_generator -> {
-                    findNavController().navigate(R.id.action_home_to_settings)
-                    // In a real app, we would navigate directly to the TOTP fragment
-                    true
-                }
-                R.id.action_backup_vault -> {
-                    findNavController().navigate(R.id.action_home_to_settings)
-                    // In a real app, we would show the backup dialog directly
+                    findNavController().navigate(R.id.action_home_to_totp)
                     true
                 }
                 else -> false
@@ -123,6 +128,52 @@ class HomeFragment : Fragment() {
         
         // Show the menu
         popupMenu.show()
+    }
+
+    private fun showAddCategoryDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_category, null)
+        val nameInput = dialogView.findViewById<EditText>(R.id.categoryNameInput)
+        val iconButton = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.categoryIconButton)
+        
+        var selectedIcon = "📁"
+        
+        iconButton.setOnClickListener {
+            showIconSelector {icon ->
+                selectedIcon = icon
+                iconButton.text = icon
+            }
+        }
+        
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Add Category")
+            .setView(dialogView)
+            .setPositiveButton("Add") { _, _ ->
+                val name = nameInput.text.toString().trim()
+                
+                if (name.isNotEmpty()) {
+                    viewModel.addCategory(name, selectedIcon)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showIconSelector(onIconSelected: (String) -> Unit) {
+        val icons = listOf(
+            "📁", "👤", "💼", "💰", "📱", "🏠", "🔒", "📧",
+            "🌐", "🎮", "📚", "🎨", "🔧", "🚗", "✈️", "⚡"
+        )
+        
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, icons)
+        
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Select Icon")
+            .setAdapter(adapter) { dialog, position ->
+                onIconSelected(icons[position])
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun observeData() {

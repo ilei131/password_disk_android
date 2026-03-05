@@ -60,6 +60,10 @@ class AddPasswordFragment : Fragment() {
     }
 
     private fun setupButtons() {
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.generatePasswordButton.setOnClickListener {
             showPasswordGeneratorDialog()
         }

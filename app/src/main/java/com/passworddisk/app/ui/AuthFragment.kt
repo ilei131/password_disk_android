@@ -64,7 +64,7 @@ class AuthFragment : Fragment() {
         binding.submitButton.text = getString(R.string.login_button)
         binding.confirmPasswordLayout.visibility = View.GONE
         binding.toggleModeButton.text = getString(R.string.switch_to_register)
-        binding.toggleModeButton.visibility = View.VISIBLE
+        binding.toggleModeButton.visibility = View.GONE
     }
 
     private fun showRegisterMode() {

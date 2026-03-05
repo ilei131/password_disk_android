@@ -4,21 +4,18 @@
     <item
         android:id="@+id/action_add_password"
         android:title="@string/add_password"
-        android:icon="@android:drawable/ic_input_add" />
+        android:icon="@drawable/add_password_icon" />
 
     <item
         android:id="@+id/action_add_category"
         android:title="@string/add_category"
-        android:icon="@android:drawable/ic_menu_add" />
+        android:icon="@drawable/add_category_icon" />
 
     <item
         android:id="@+id/action_totp_generator"
         android:title="@string/totp_generator"
-        android:icon="@android:drawable/ic_lock_idle_lock" />
+        android:icon="@drawable/totp_icon" />
 
-    <item
-        android:id="@+id/action_backup_vault"
-        android:title="@string/backup_vault"
-        android:icon="@android:drawable/ic_menu_save" />
+
 
 </menu>

@@ -50,14 +50,6 @@ class SettingsFragment : Fragment() {
         binding.restoreButton.setOnClickListener {
             showRestoreDialog()
         }
-
-        binding.totpButton.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_totp)
-        }
-
-        binding.changePasswordButton.setOnClickListener {
-            showChangePasswordDialog()
-        }
     }
 
     private fun showBackupDialog() {
@@ -83,10 +75,6 @@ class SettingsFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-
-    private fun showChangePasswordDialog() {
-        Toast.makeText(requireContext(), "Change password feature coming soon", Toast.LENGTH_SHORT).show()
     }
 
     private fun observeData() {

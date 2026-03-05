@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.passworddisk.app.databinding.FragmentTotpBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
 
@@ -31,10 +32,13 @@ class TotpFragment : Fragment() {
 
         setupButtons()
         observeData()
-        startTimer()
     }
 
     private fun setupButtons() {
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.generateButton.setOnClickListener {
             val secret = binding.secretInput.text.toString().trim()
             if (secret.isEmpty()) {
@@ -43,6 +47,20 @@ class TotpFragment : Fragment() {
             }
             viewModel.generateTotpCode(secret)
         }
+
+        binding.codeText.setOnClickListener {
+            val code = binding.codeText.text.toString()
+            if (code != "----" && code.isNotEmpty()) {
+                copyToClipboard(code)
+            }
+        }
+    }
+
+    private fun copyToClipboard(text: String) {
+        val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val clip = android.content.ClipData.newPlainText("2FA Code", text)
+        clipboard.setPrimaryClip(clip)
+        Toast.makeText(requireContext(), "Code copied to clipboard", Toast.LENGTH_SHORT).show()
     }
 
     private fun observeData() {
@@ -50,6 +68,7 @@ class TotpFragment : Fragment() {
             code?.let {
                 binding.codeText.text = it
                 binding.codeText.visibility = View.VISIBLE
+                startTimer()
             }
         }
 
