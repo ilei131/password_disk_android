@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.PasswordDisk" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+    </style>
+</resources>

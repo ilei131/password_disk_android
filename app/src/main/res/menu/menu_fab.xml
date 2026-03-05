@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_add_password"
+        android:title="@string/add_password"
+        android:icon="@android:drawable/ic_input_add" />
+
+    <item
+        android:id="@+id/action_add_category"
+        android:title="@string/add_category"
+        android:icon="@android:drawable/ic_menu_add" />
+
+    <item
+        android:id="@+id/action_totp_generator"
+        android:title="@string/totp_generator"
+        android:icon="@android:drawable/ic_lock_idle_lock" />
+
+    <item
+        android:id="@+id/action_backup_vault"
+        android:title="@string/backup_vault"
+        android:icon="@android:drawable/ic_menu_save" />
+
+</menu>
