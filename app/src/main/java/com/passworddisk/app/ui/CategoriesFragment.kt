@@ -161,7 +161,7 @@ class CategoriesFragment : Fragment() {
     private fun confirmDeleteCategory(category: Category) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Delete Category")
-            .setMessage("Are you sure you want to delete \"${category.name}\"? Passwords in this category will not be deleted.")
+            .setMessage("Are you sure you want to delete \"${category.name}\"? All passwords in this category will also be deleted.")
             .setPositiveButton("Delete") { _, _ ->
                 viewModel.deleteCategory(category)
             }

@@ -183,10 +183,16 @@ class PasswordRepository(
     }
 
     suspend fun deleteCategory(category: Category) {
+        // 先删除分类下的所有密码
+        passwordDao.deletePasswordsByCategory(category.id)
+        // 再删除分类
         categoryDao.deleteCategory(category)
     }
 
     suspend fun deleteCategoryById(id: String) {
+        // 先删除分类下的所有密码
+        passwordDao.deletePasswordsByCategory(id)
+        // 再删除分类
         categoryDao.deleteCategoryById(id)
     }
 

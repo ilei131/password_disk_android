@@ -31,4 +31,7 @@ interface PasswordDao {
 
     @Query("DELETE FROM password_items")
     suspend fun deleteAllPasswords()
+
+    @Query("DELETE FROM password_items WHERE categoryId = :categoryId")
+    suspend fun deletePasswordsByCategory(categoryId: String)
 }
