@@ -47,6 +47,17 @@
     <string name="backup_successful">Backup successful</string>
     <string name="syncing">Syncing...</string>
     <string name="synced_successfully">Synced successfully</string>
+    <string name="registration_failed">Registration failed</string>
+    <string name="login_failed">Login failed</string>
+    <string name="sync_failed">Sync failed</string>
+    <string name="failed_to_get_passwords">Failed to get passwords</string>
+    <string name="network_error">Network error: %1$d</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="failed_to_restore_vault">Failed to restore vault from sync</string>
+    <string name="failed_to_create_backup">Failed to create backup</string>
+    <string name="failed_to_backup_to_cloud">Failed to backup to cloud</string>
+    <string name="logged_in_successfully">Logged in successfully</string>
+    <string name="please_login_again">Synced successfully. Please login again to access your passwords.</string>
     <string name="backup_restore">Backup &amp; Restore</string>
     <string name="backup_vault">Backup Vault</string>
     <string name="restore_vault">Restore Vault</string>

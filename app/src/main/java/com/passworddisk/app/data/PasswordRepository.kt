@@ -201,14 +201,24 @@ class PasswordRepository(
         val passwords = passwordDao.getAllPasswords().first() // Collect the first emission
         val categories = categoryDao.getAllCategories().first() // Collect the first emission
 
-        val passwordsJson = passwords.joinToString(",") {
+        // Create category ID to name mapping
+        val categoryMap = categories.associateBy { it.id }
+
+        // Sort passwords by created_at (ascending) to match Rust behavior
+        val sortedPasswords = passwords.sortedBy { it.createdAt }
+
+        // Sort categories by id (ascending) to match Rust behavior
+        val sortedCategories = categories.sortedBy { it.id }
+
+        val passwordsJson = sortedPasswords.joinToString(",") {
+            val categoryName = categoryMap[it.categoryId]?.name ?: "所有"
             String.format(
-                "{\"id\":\"%s\",\"title\":\"%s\",\"username\":\"%s\",\"password\":\"%s\",\"url\":\"%s\",\"notes\":\"%s\",\"categoryId\":\"%s\",\"created_at\":%d,\"updated_at\":%d}",
-                it.id, it.title, it.username, it.password, it.url, it.notes, it.categoryId, it.createdAt, it.updatedAt
+                "{\"id\":\"%s\",\"title\":\"%s\",\"username\":\"%s\",\"password\":\"%s\",\"url\":\"%s\",\"notes\":\"%s\",\"category\":\"%s\",\"created_at\":%d,\"updated_at\":%d}",
+                it.id, it.title, it.username, it.password, it.url, it.notes, categoryName, it.createdAt, it.updatedAt
             )
         }
 
-        val categoriesJson = categories.joinToString(",") {
+        val categoriesJson = sortedCategories.joinToString(",") {
             String.format(
                 "{\"id\":\"%s\",\"name\":\"%s\",\"icon\":\"%s\"}",
                 it.id, it.name, it.icon

@@ -92,7 +92,13 @@
         android:id="@+id/cloudSyncFragment"
         android:name="com.passworddisk.app.ui.CloudSyncFragment"
         android:label="Cloud Sync"
-        tools:layout="@layout/fragment_cloud_sync" />
+        tools:layout="@layout/fragment_cloud_sync">
+        <action
+            android:id="@+id/action_cloudSync_to_auth"
+            app:destination="@id/authFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/totpFragment"

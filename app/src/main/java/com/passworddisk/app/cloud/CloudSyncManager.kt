@@ -36,13 +36,13 @@ object CloudSyncManager {
                 if (body != null && body.success) {
                     Result.success(body)
                 } else {
-                    Result.failure(Exception(body?.error ?: "Registration failed"))
+                    Result.failure(CloudSyncErrorException(CloudSyncError.RegistrationFailed, body?.error))
                 }
             } else {
-                Result.failure(Exception("Network error: ${response.code()}"))
+                Result.failure(CloudSyncErrorException(CloudSyncError.NetworkError(response.code())))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(CloudSyncErrorException(CloudSyncError.UnknownError(e.message ?: "Unknown error")))
         }
     }
 
@@ -54,13 +54,13 @@ object CloudSyncManager {
                 if (body != null && body.success) {
                     Result.success(body)
                 } else {
-                    Result.failure(Exception(body?.error ?: "Login failed"))
+                    Result.failure(CloudSyncErrorException(CloudSyncError.LoginFailed, body?.error))
                 }
             } else {
-                Result.failure(Exception("Network error: ${response.code()}"))
+                Result.failure(CloudSyncErrorException(CloudSyncError.NetworkError(response.code())))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(CloudSyncErrorException(CloudSyncError.UnknownError(e.message ?: "Unknown error")))
         }
     }
 
@@ -72,13 +72,13 @@ object CloudSyncManager {
                 if (body != null && body.success) {
                     Result.success(body)
                 } else {
-                    Result.failure(Exception(body?.error ?: "Sync failed"))
+                    Result.failure(CloudSyncErrorException(CloudSyncError.SyncFailed, body?.error))
                 }
             } else {
-                Result.failure(Exception("Network error: ${response.code()}"))
+                Result.failure(CloudSyncErrorException(CloudSyncError.NetworkError(response.code())))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(CloudSyncErrorException(CloudSyncError.UnknownError(e.message ?: "Unknown error")))
         }
     }
 
@@ -90,13 +90,18 @@ object CloudSyncManager {
                 if (body != null && body.success) {
                     Result.success(body)
                 } else {
-                    Result.failure(Exception(body?.error ?: "Failed to get passwords"))
+                    Result.failure(CloudSyncErrorException(CloudSyncError.GetPasswordsFailed, body?.error))
                 }
             } else {
-                Result.failure(Exception("Network error: ${response.code()}"))
+                Result.failure(CloudSyncErrorException(CloudSyncError.NetworkError(response.code())))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(CloudSyncErrorException(CloudSyncError.UnknownError(e.message ?: "Unknown error")))
         }
     }
 }
+
+class CloudSyncErrorException(
+    val error: CloudSyncError,
+    val serverMessage: String? = null
+) : Exception(serverMessage ?: error.code)

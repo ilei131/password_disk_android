@@ -111,10 +111,10 @@ class CloudSyncFragment : Fragment() {
                     binding.authButtons.visibility = View.GONE
                     binding.syncLayout.visibility = View.VISIBLE
                 } 
-                // 同步成功后关闭当前页面
-                else if (it.contains(getString(R.string.synced_successfully))) {
-                    // 关闭当前页面，返回上一页
-                    findNavController().navigateUp()
+                // 同步成功后跳转到登录页面
+                else if (it.contains("Synced successfully", ignoreCase = true) || it.contains("同步成功")) {
+                    // 跳转到登录页面，让用户重新登录
+                    findNavController().navigate(R.id.action_cloudSync_to_auth)
                 }
             }
         }

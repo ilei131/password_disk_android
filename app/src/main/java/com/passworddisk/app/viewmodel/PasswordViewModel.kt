@@ -6,6 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.passworddisk.app.PasswordDiskApplication
+import com.passworddisk.app.R
+import com.passworddisk.app.cloud.CloudSyncError
+import com.passworddisk.app.cloud.CloudSyncErrorException
 import com.passworddisk.app.cloud.CloudSyncManager
 import com.passworddisk.app.crypto.CryptoManager
 import com.passworddisk.app.crypto.TotpGenerator
@@ -210,9 +213,9 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = CloudSyncManager.register(username, password)
             result.onSuccess {
-                _successMessage.value = "Registered successfully"
+                _successMessage.value = getApplication<Application>().getString(R.string.registered_successfully)
             }.onFailure {
-                _errorMessage.value = it.message
+                _errorMessage.value = getLocalizedErrorMessage(it)
             }
         }
     }
@@ -221,9 +224,9 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = CloudSyncManager.login(username, password, backup)
             result.onSuccess {
-                _successMessage.value = "Logged in successfully"
+                _successMessage.value = getApplication<Application>().getString(R.string.logged_in_successfully)
             }.onFailure {
-                _errorMessage.value = it.message
+                _errorMessage.value = getLocalizedErrorMessage(it)
             }
         }
     }
@@ -231,7 +234,7 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
     fun syncCloud(username: String, password: String) {
         viewModelScope.launch {
             val result = CloudSyncManager.sync(username, password)
-            result.onSuccess { response -> 
+            result.onSuccess { response ->
                 // 处理返回的密码数据
                 if (response.backup != null) {
                     // 使用返回的备份数据恢复密码库
@@ -239,15 +242,15 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
                     if (restoreSuccess) {
                         // 同步成功后，强制用户重新登录以获取新的 masterKey
                         _isAuthenticated.value = false
-                        _successMessage.value = "Synced successfully. Please login again to access your passwords."
+                        _successMessage.value = getApplication<Application>().getString(R.string.please_login_again)
                     } else {
-                        _errorMessage.value = "Failed to restore vault from sync"
+                        _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_restore_vault)
                     }
                 } else {
-                    _successMessage.value = "Synced successfully"
+                    _successMessage.value = getApplication<Application>().getString(R.string.synced_successfully)
                 }
-            }.onFailure { 
-                _errorMessage.value = it.message
+            }.onFailure {
+                _errorMessage.value = getLocalizedErrorMessage(it)
             }
         }
     }
@@ -260,17 +263,32 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
                 if (backup != null) {
                     // 使用 login 接口上传备份数据
                     val result = CloudSyncManager.login(username, password, backup)
-                    result.onSuccess { 
-                        _successMessage.value = "Backup to cloud successful"
-                    }.onFailure { 
-                        _errorMessage.value = it.message
+                    result.onSuccess {
+                        _successMessage.value = getApplication<Application>().getString(R.string.backup_successful)
+                    }.onFailure {
+                        _errorMessage.value = getLocalizedErrorMessage(it)
                     }
                 } else {
-                    _errorMessage.value = "Failed to create backup"
+                    _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_create_backup)
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Failed to backup to cloud"
+                _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_backup_to_cloud)
             }
+        }
+    }
+
+    private fun getLocalizedErrorMessage(throwable: Throwable): String {
+        return if (throwable is CloudSyncErrorException) {
+            when (throwable.error) {
+                is CloudSyncError.RegistrationFailed -> getApplication<Application>().getString(R.string.registration_failed)
+                is CloudSyncError.LoginFailed -> getApplication<Application>().getString(R.string.login_failed)
+                is CloudSyncError.SyncFailed -> getApplication<Application>().getString(R.string.sync_failed)
+                is CloudSyncError.GetPasswordsFailed -> getApplication<Application>().getString(R.string.failed_to_get_passwords)
+                is CloudSyncError.NetworkError -> getApplication<Application>().getString(R.string.network_error, throwable.error.statusCode)
+                is CloudSyncError.UnknownError -> getApplication<Application>().getString(R.string.unknown_error)
+            }
+        } else {
+            throwable.message ?: getApplication<Application>().getString(R.string.unknown_error)
         }
     }
 
