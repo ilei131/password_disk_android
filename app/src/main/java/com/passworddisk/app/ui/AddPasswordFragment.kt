@@ -80,11 +80,17 @@ class AddPasswordFragment : Fragment() {
     private fun showPasswordGeneratorDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_password_generator, null)
         val lengthInput = dialogView.findViewById<com.google.android.material.slider.Slider>(R.id.lengthSlider)
+        val lengthValue = dialogView.findViewById<android.widget.TextView>(R.id.lengthValue)
         val uppercaseCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.uppercaseCheck)
         val lowercaseCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.lowercaseCheck)
         val numbersCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.numbersCheck)
         val symbolsCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.symbolsCheck)
         val resultText = dialogView.findViewById<android.widget.TextView>(R.id.generatedPasswordText)
+
+        // 监听滑块变化，更新长度值
+        lengthInput.addOnChangeListener { _, value, _ ->
+            lengthValue.text = value.toInt().toString()
+        }
 
         uppercaseCheck.isChecked = true
         lowercaseCheck.isChecked = true

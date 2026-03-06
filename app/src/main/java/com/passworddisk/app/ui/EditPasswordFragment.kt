@@ -41,6 +41,8 @@ class EditPasswordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.saveButton.text = getString(R.string.update)
+        // 修改标题为编辑密码
+        binding.titleText.text = getString(R.string.edit_password)
 
         val passwordId = arguments?.getString("passwordId")
         passwordId?.let { loadPassword(it) }
@@ -93,6 +95,10 @@ class EditPasswordFragment : Fragment() {
     }
 
     private fun setupButtons() {
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.generatePasswordButton.setOnClickListener {
             showPasswordGeneratorDialog()
         }
@@ -108,6 +114,14 @@ class EditPasswordFragment : Fragment() {
 
     private fun showPasswordGeneratorDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_password_generator, null)
+        
+        // 添加滑块变化监听器
+        val lengthSlider = dialogView.findViewById<com.google.android.material.slider.Slider>(R.id.lengthSlider)
+        val lengthValue = dialogView.findViewById<android.widget.TextView>(R.id.lengthValue)
+        
+        lengthSlider.addOnChangeListener { _, value, _ ->
+            lengthValue.text = value.toInt().toString()
+        }
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.generate_password_title))

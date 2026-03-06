@@ -62,11 +62,11 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
 
     fun initializeVault(masterPassword: String, confirmPassword: String) {
         if (masterPassword != confirmPassword) {
-            _errorMessage.value = "Passwords do not match"
+            _errorMessage.value = getApplication<Application>().getString(R.string.passwords_do_not_match)
             return
         }
         if (masterPassword.length < 6) {
-            _errorMessage.value = "Password must be at least 6 characters"
+            _errorMessage.value = getApplication<Application>().getString(R.string.password_min_length)
             return
         }
 
@@ -75,9 +75,9 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
             if (success) {
                 _isVaultInitialized.value = true
                 _isAuthenticated.value = true
-                _successMessage.value = "Vault initialized successfully"
+                _successMessage.value = getApplication<Application>().getString(R.string.vault_initialized_successfully)
             } else {
-                _errorMessage.value = "Vault already exists"
+                _errorMessage.value = getApplication<Application>().getString(R.string.vault_already_exists)
             }
         }
     }
@@ -90,7 +90,7 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
                 _errorMessage.value = null
             } else {
                 _isAuthenticated.value = false
-                _errorMessage.value = "Invalid password"
+                _errorMessage.value = getApplication<Application>().getString(R.string.invalid_password)
             }
         }
     }
@@ -111,9 +111,9 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = repository.addPassword(title, username, password, url, notes, categoryId)
             if (result != null) {
-                _successMessage.value = "Password added successfully"
+                _successMessage.value = getApplication<Application>().getString(R.string.password_added_successfully)
             } else {
-                _errorMessage.value = "Failed to add password"
+                _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_add_password)
             }
         }
     }
@@ -122,9 +122,9 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = repository.updatePassword(passwordItem, plainPassword)
             if (result != null) {
-                _successMessage.value = "Password updated successfully"
+                _successMessage.value = getApplication<Application>().getString(R.string.password_updated_successfully)
             } else {
-                _errorMessage.value = "Failed to update password"
+                _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_update_password)
             }
         }
     }
@@ -132,14 +132,14 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
     fun deletePassword(passwordItem: PasswordItem) {
         viewModelScope.launch {
             repository.deletePassword(passwordItem)
-            _successMessage.value = "Password deleted successfully"
+            _successMessage.value = getApplication<Application>().getString(R.string.password_deleted_successfully)
         }
     }
 
     fun deletePasswordById(id: String) {
         viewModelScope.launch {
             repository.deletePasswordById(id)
-            _successMessage.value = "Password deleted successfully"
+            _successMessage.value = getApplication<Application>().getString(R.string.password_deleted_successfully)
         }
     }
 
@@ -150,28 +150,28 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
     fun addCategory(name: String, icon: String) {
         viewModelScope.launch {
             repository.addCategory(name, icon)
-            _successMessage.value = "Category added successfully"
+            _successMessage.value = getApplication<Application>().getString(R.string.category_added_successfully)
         }
     }
 
     fun updateCategory(category: Category) {
         viewModelScope.launch {
             repository.updateCategory(category)
-            _successMessage.value = "Category updated successfully"
+            _successMessage.value = getApplication<Application>().getString(R.string.category_updated_successfully)
         }
     }
 
     fun deleteCategory(category: Category) {
         viewModelScope.launch {
             repository.deleteCategory(category)
-            _successMessage.value = "Category deleted successfully"
+            _successMessage.value = getApplication<Application>().getString(R.string.category_deleted_successfully)
         }
     }
 
     fun deleteCategoryById(id: String) {
         viewModelScope.launch {
             repository.deleteCategoryById(id)
-            _successMessage.value = "Category deleted successfully"
+            _successMessage.value = getApplication<Application>().getString(R.string.category_deleted_successfully)
         }
     }
 
@@ -204,7 +204,7 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
                 val code = TotpGenerator.generateCode(secret)
                 _totpCode.value = code
             } catch (e: Exception) {
-                _errorMessage.value = "Failed to generate TOTP code"
+                _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_generate_totp_code)
             }
         }
     }
@@ -298,12 +298,12 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
                 val backup = repository.getVaultBackup()
                 if (backup != null) {
                     // In a real app, you would save this backup to a file or share it
-                    _successMessage.value = "Backup created successfully"
+                    _successMessage.value = getApplication<Application>().getString(R.string.backup_created_successfully)
                 } else {
-                    _errorMessage.value = "Failed to create backup"
+                    _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_create_backup)
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Failed to create backup"
+                _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_create_backup)
             }
         }
     }
@@ -313,12 +313,12 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
             try {
                 val success = repository.restoreVault(backup)
                 if (success) {
-                    _successMessage.value = "Vault restored successfully"
+                    _successMessage.value = getApplication<Application>().getString(R.string.vault_restored_successfully)
                 } else {
-                    _errorMessage.value = "Failed to restore vault"
+                    _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_restore_vault)
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Failed to restore vault"
+                _errorMessage.value = getApplication<Application>().getString(R.string.failed_to_restore_vault)
             }
         }
     }
