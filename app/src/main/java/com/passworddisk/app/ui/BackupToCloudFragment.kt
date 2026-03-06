@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.passworddisk.app.R
 import com.passworddisk.app.databinding.FragmentBackupToCloudBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
 
@@ -38,16 +39,16 @@ class BackupToCloudFragment : Fragment() {
         }
 
         binding.registerHint.setOnClickListener {
-            if (binding.registerHint.text.toString() == "没有账号？") {
+            if (binding.registerHint.text.toString() == getString(R.string.no_account)) {
                 // 切换到注册界面
                 binding.backupLayout.visibility = View.GONE
                 binding.authButtons.visibility = View.VISIBLE
-                binding.registerHint.text = "已有账号？"
+                binding.registerHint.text = getString(R.string.have_account)
             } else {
                 // 切换回备份界面
                 binding.authButtons.visibility = View.GONE
                 binding.backupLayout.visibility = View.VISIBLE
-                binding.registerHint.text = "没有账号？"
+                binding.registerHint.text = getString(R.string.no_account)
             }
         }
 
@@ -56,7 +57,7 @@ class BackupToCloudFragment : Fragment() {
             val password = binding.passwordInput.text.toString()
 
             if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.please_fill_all_fields), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -68,13 +69,13 @@ class BackupToCloudFragment : Fragment() {
             val password = binding.passwordInput.text.toString()
 
             if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.please_fill_all_fields), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             // 显示加载状态
             binding.backupButton.isEnabled = false
-            binding.backupButton.text = "Backing up..."
+            binding.backupButton.text = getString(R.string.backing_up)
 
             // 先获取本地备份数据，然后上传到云端
             viewModel.backupToCloud(username, password)
@@ -86,19 +87,19 @@ class BackupToCloudFragment : Fragment() {
             message?.let {
                 // 重置按钮状态
                 binding.backupButton.isEnabled = true
-                binding.backupButton.text = "备份至云端"
+                binding.backupButton.text = getString(R.string.backup_to_cloud)
                 
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
                 
                 // 注册成功后返回备份界面
-                if (it.contains("Registered")) {
+                if (it.contains(getString(R.string.registered_successfully))) {
                     binding.authButtons.visibility = View.GONE
                     binding.backupLayout.visibility = View.VISIBLE
-                    binding.registerHint.text = "没有账号？"
+                    binding.registerHint.text = getString(R.string.no_account)
                 } 
                 // 备份成功后关闭当前页面
-                else if (it.contains("Backup")) {
+                else if (it.contains(getString(R.string.backup_successful))) {
                     // 关闭当前页面，返回上一页
                     findNavController().navigateUp()
                 }
@@ -109,7 +110,7 @@ class BackupToCloudFragment : Fragment() {
             message?.let {
                 // 重置按钮状态
                 binding.backupButton.isEnabled = true
-                binding.backupButton.text = "备份至云端"
+                binding.backupButton.text = getString(R.string.backup_to_cloud)
                 
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()

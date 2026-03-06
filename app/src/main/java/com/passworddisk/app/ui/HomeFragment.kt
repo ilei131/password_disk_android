@@ -145,16 +145,16 @@ class HomeFragment : Fragment() {
         }
         
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Add Category")
+            .setTitle(getString(R.string.add_category_title))
             .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
+            .setPositiveButton(getString(R.string.add_category)) { _, _ ->
                 val name = nameInput.text.toString().trim()
-                
+
                 if (name.isNotEmpty()) {
                     viewModel.addCategory(name, selectedIcon)
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -167,12 +167,12 @@ class HomeFragment : Fragment() {
         val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, icons)
         
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Select Icon")
+            .setTitle(getString(R.string.select_icon))
             .setAdapter(adapter) { dialog, position ->
                 onIconSelected(icons[position])
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -233,13 +233,13 @@ class HomeFragment : Fragment() {
                 val dialog = MaterialAlertDialogBuilder(requireContext())
                     .setTitle(password.title)
                     .setMessage("""
-                        Username: ${password.username}
-                        Password: $it
-                        URL: ${password.url}
-                        Notes: ${password.notes}
+                        ${getString(R.string.username_label, password.username)}
+                        ${getString(R.string.password_label, it)}
+                        ${getString(R.string.url_label, password.url)}
+                        ${getString(R.string.notes_label, password.notes)}
                     """.trimIndent())
-                    .setPositiveButton("OK", null)
-                    .setNeutralButton("Copy Password") { _, _ ->
+                    .setPositiveButton(getString(R.string.ok), null)
+                    .setNeutralButton(getString(R.string.copy_password_button)) { _, _ ->
                         copyToClipboard(it)
                     }
                     .create()
@@ -259,9 +259,9 @@ class HomeFragment : Fragment() {
 
     private fun copyToClipboard(text: String) {
         val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-        val clip = android.content.ClipData.newPlainText("password", text)
+        val clip = android.content.ClipData.newPlainText(getString(R.string.password_hint), text)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(requireContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
     }
 
     private fun editPassword(password: PasswordItem) {
@@ -273,12 +273,12 @@ class HomeFragment : Fragment() {
 
     private fun confirmDeletePassword(password: PasswordItem) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Delete Password")
-            .setMessage("Are you sure you want to delete \"${password.title}\"?")
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle(getString(R.string.delete_password_title))
+            .setMessage(getString(R.string.delete_password_message, password.title))
+            .setPositiveButton(getString(R.string.delete_password)) { _, _ ->
                 viewModel.deletePassword(password)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 

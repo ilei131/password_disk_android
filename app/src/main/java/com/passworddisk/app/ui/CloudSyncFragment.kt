@@ -40,8 +40,17 @@ class CloudSyncFragment : Fragment() {
         }
 
         binding.registerHint.setOnClickListener {
-            binding.syncLayout.visibility = View.GONE
-            binding.authButtons.visibility = View.VISIBLE
+            if (binding.registerHint.text.toString() == getString(R.string.no_account)) {
+                // 显示注册界面
+                binding.syncLayout.visibility = View.GONE
+                binding.authButtons.visibility = View.VISIBLE
+                binding.registerHint.text = getString(R.string.have_account)
+            } else {
+                // 返回同步界面
+                binding.authButtons.visibility = View.GONE
+                binding.syncLayout.visibility = View.VISIBLE
+                binding.registerHint.text = getString(R.string.no_account)
+            }
         }
 
         binding.registerButton.setOnClickListener {
@@ -49,7 +58,7 @@ class CloudSyncFragment : Fragment() {
             val password = binding.passwordInput.text.toString()
 
             if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.please_fill_all_fields), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -61,7 +70,7 @@ class CloudSyncFragment : Fragment() {
 //            val password = binding.passwordInput.text.toString()
 //
 //            if (username.isEmpty() || password.isEmpty()) {
-//                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(requireContext(), getString(R.string.please_fill_all_fields), Toast.LENGTH_SHORT).show()
 //                return@setOnClickListener
 //            }
 //
@@ -73,13 +82,13 @@ class CloudSyncFragment : Fragment() {
             val password = binding.passwordInput.text.toString()
 
             if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.please_fill_all_fields), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             // 显示加载状态
             binding.syncButton.isEnabled = false
-            binding.syncButton.text = "Syncing..."
+            binding.syncButton.text = getString(R.string.syncing)
             binding.syncButton.icon = null // 移除图标
 
             viewModel.syncCloud(username, password)
@@ -98,12 +107,12 @@ class CloudSyncFragment : Fragment() {
                 viewModel.clearMessages()
                 
                 // 注册成功后返回同步界面
-                if (it.contains("Register")) {
+                if (it.contains(getString(R.string.registered_successfully))) {
                     binding.authButtons.visibility = View.GONE
                     binding.syncLayout.visibility = View.VISIBLE
                 } 
                 // 同步成功后关闭当前页面
-                else if (it.contains("Sync")) {
+                else if (it.contains(getString(R.string.synced_successfully))) {
                     // 关闭当前页面，返回上一页
                     findNavController().navigateUp()
                 }

@@ -20,14 +20,14 @@
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_arrow_back"
-            android:contentDescription="Back" />
+            android:contentDescription="@string/back" />
 
         <TextView
             android:gravity="center"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/cloud_sync"
+            android:text="@string/cloud_sync_settings"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -128,21 +128,21 @@
                     android:layout_height="wrap_content"
                     android:text="@string/sync_now"
                     android:layout_marginTop="24dp"
-                    app:icon="@drawable/ic_launcher_foreground"
                     app:iconGravity="end"
                     app:iconPadding="8dp" />
 
-                <TextView
-                    android:id="@+id/registerHint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="没有账号？"
-                    android:layout_marginTop="16dp"
-                    android:textColor="?attr/colorPrimary"
-                    android:clickable="true"
-                    android:focusable="true" />
-
             </LinearLayout>
+
+            <!-- 账号提示按钮 - 独立于 syncLayout 和 authButtons -->
+            <TextView
+                android:id="@+id/registerHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_account"
+                android:layout_marginTop="16dp"
+                android:textColor="?attr/colorPrimary"
+                android:clickable="true"
+                android:focusable="true" />
 
         </LinearLayout>
     </ScrollView>

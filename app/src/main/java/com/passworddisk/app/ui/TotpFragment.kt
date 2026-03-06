@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.passworddisk.app.R
 import com.passworddisk.app.databinding.FragmentTotpBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
 
@@ -42,7 +43,7 @@ class TotpFragment : Fragment() {
         binding.generateButton.setOnClickListener {
             val secret = binding.secretInput.text.toString().trim()
             if (secret.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a secret key", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.please_enter_secret), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             viewModel.generateTotpCode(secret)
@@ -58,9 +59,9 @@ class TotpFragment : Fragment() {
 
     private fun copyToClipboard(text: String) {
         val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-        val clip = android.content.ClipData.newPlainText("2FA Code", text)
+        val clip = android.content.ClipData.newPlainText(getString(R.string.totp_generator), text)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(requireContext(), "Code copied to clipboard", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.code_copied), Toast.LENGTH_SHORT).show()
     }
 
     private fun observeData() {
@@ -85,12 +86,12 @@ class TotpFragment : Fragment() {
         countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val seconds = millisUntilFinished / 1000
-                binding.timerText.text = "Code expires in: ${seconds}s"
+                binding.timerText.text = getString(R.string.code_expires_in, seconds)
             }
 
             override fun onFinish() {
-                binding.codeText.text = "----"
-                binding.timerText.text = "Code expired"
+                binding.codeText.text = getString(R.string.code_placeholder)
+                binding.timerText.text = getString(R.string.code_expired)
             }
         }.start()
     }

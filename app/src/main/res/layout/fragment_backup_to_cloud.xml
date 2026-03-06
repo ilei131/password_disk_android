@@ -20,14 +20,14 @@
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_arrow_back"
-            android:contentDescription="Back" />
+            android:contentDescription="@string/back" />
 
         <TextView
             android:gravity="center"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="备份至云端"
+            android:text="@string/backup_to_cloud"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -109,7 +109,7 @@
                     android:id="@+id/backupButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="备份至云端"
+                    android:text="@string/backup_to_cloud"
                     android:layout_marginTop="24dp" />
 
             </LinearLayout>
@@ -118,7 +118,7 @@
                 android:id="@+id/registerHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="没有账号？"
+                android:text="@string/no_account"
                 android:layout_marginTop="16dp"
                 android:textColor="?attr/colorPrimary"
                 android:clickable="true"

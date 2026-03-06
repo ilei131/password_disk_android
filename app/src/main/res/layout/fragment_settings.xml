@@ -76,7 +76,7 @@
                     android:id="@+id/backupToCloudButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="备份至云端"
+                    android:text="@string/backup_to_cloud"
                     android:layout_marginTop="8dp" />
 
             </LinearLayout>

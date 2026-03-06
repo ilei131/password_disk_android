@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.passworddisk.app.R
 import com.passworddisk.app.data.Category
 import com.passworddisk.app.databinding.FragmentCategoriesBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
@@ -99,15 +100,15 @@ class CategoriesFragment : Fragment() {
         }
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Add Category")
+            .setTitle(getString(R.string.add_category_title))
             .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
+            .setPositiveButton(getString(R.string.add_category)) { _, _ ->
                 val name = nameInput.text.toString().trim()
                 if (name.isNotEmpty()) {
                     viewModel.addCategory(name, selectedIcon)
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -128,15 +129,15 @@ class CategoriesFragment : Fragment() {
         }
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Edit Category")
+            .setTitle(getString(R.string.edit_category_title))
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
                 val name = nameInput.text.toString().trim()
                 if (name.isNotEmpty()) {
                     viewModel.updateCategory(category.copy(name = name, icon = selectedIcon))
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -149,23 +150,23 @@ class CategoriesFragment : Fragment() {
         val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, icons)
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Select Icon")
+            .setTitle(getString(R.string.select_icon))
             .setAdapter(adapter) { dialog, position ->
                 onIconSelected(icons[position])
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
     private fun confirmDeleteCategory(category: Category) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Delete Category")
-            .setMessage("Are you sure you want to delete \"${category.name}\"? All passwords in this category will also be deleted.")
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle(getString(R.string.delete_category_title))
+            .setMessage(getString(R.string.delete_category_message, category.name))
+            .setPositiveButton(getString(R.string.delete_category)) { _, _ ->
                 viewModel.deleteCategory(category)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 

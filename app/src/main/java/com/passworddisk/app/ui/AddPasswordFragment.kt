@@ -92,12 +92,12 @@ class AddPasswordFragment : Fragment() {
         symbolsCheck.isChecked = true
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Generate Password")
+            .setTitle(getString(R.string.generate_password_title))
             .setView(dialogView)
-            .setPositiveButton("Use") { _, _ ->
+            .setPositiveButton(getString(R.string.use)) { _, _ ->
                 binding.passwordInput.setText(resultText.text)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .create()
 
         dialogView.findViewById<android.widget.Button>(R.id.generateButton).setOnClickListener {
@@ -127,13 +127,13 @@ class AddPasswordFragment : Fragment() {
         val notes = binding.notesInput.text.toString().trim()
 
         if (title.isEmpty()) {
-            binding.titleLayout.error = "Title is required"
+            binding.titleLayout.error = getString(R.string.title_required)
             return
         }
         binding.titleLayout.error = null
 
         if (password.isEmpty()) {
-            binding.passwordLayout.error = "Password is required"
+            binding.passwordLayout.error = getString(R.string.password_required_field)
             return
         }
         binding.passwordLayout.error = null
@@ -146,7 +146,7 @@ class AddPasswordFragment : Fragment() {
         }
 
         viewModel.addPassword(title, username, password, url, notes, categoryId)
-        Toast.makeText(requireContext(), "Password saved", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.password_saved), Toast.LENGTH_SHORT).show()
         findNavController().navigateUp()
     }
 

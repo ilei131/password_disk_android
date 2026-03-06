@@ -40,7 +40,7 @@ class EditPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.saveButton.text = "Update"
+        binding.saveButton.text = getString(R.string.update)
 
         val passwordId = arguments?.getString("passwordId")
         passwordId?.let { loadPassword(it) }
@@ -110,13 +110,13 @@ class EditPasswordFragment : Fragment() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_password_generator, null)
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Generate Password")
+            .setTitle(getString(R.string.generate_password_title))
             .setView(dialogView)
-            .setPositiveButton("Use") { _, _ ->
+            .setPositiveButton(getString(R.string.use)) { _, _ ->
                 val resultText = dialogView.findViewById<android.widget.TextView>(R.id.generatedPasswordText)
                 binding.passwordInput.setText(resultText.text)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .create()
 
         dialogView.findViewById<android.widget.Button>(R.id.generateButton).setOnClickListener {
@@ -155,13 +155,13 @@ class EditPasswordFragment : Fragment() {
         val notes = binding.notesInput.text.toString().trim()
 
         if (title.isEmpty()) {
-            binding.titleLayout.error = "Title is required"
+            binding.titleLayout.error = getString(R.string.title_required)
             return
         }
         binding.titleLayout.error = null
 
         if (newPassword.isEmpty()) {
-            binding.passwordLayout.error = "Password is required"
+            binding.passwordLayout.error = getString(R.string.password_required_field)
             return
         }
         binding.passwordLayout.error = null
@@ -182,7 +182,7 @@ class EditPasswordFragment : Fragment() {
         )
 
         viewModel.updatePassword(updatedPassword, newPassword)
-        Toast.makeText(requireContext(), "Password updated", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.password_updated), Toast.LENGTH_SHORT).show()
         findNavController().navigateUp()
     }
 
