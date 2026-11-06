@@ -127,20 +127,25 @@
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
                     android:paddingTop="@dimen/space_xl"
-                    android:paddingBottom="@dimen/space_lg">
+                    android:paddingBottom="@dimen/space_2xl">
 
                     <FrameLayout
                         android:layout_width="196dp"
                         android:layout_height="196dp">
 
+                        <!--
+                            indicatorSize 必须比控件本身小，否则 5dp 的环宽会画到边界之外，
+                            右侧和下侧被 View 的裁剪边界切平成直线（看起来像被卡片压住）。
+                            这里留 6dp 余量：184 + 5 = 189 < 196。
+                        -->
                         <com.google.android.material.progressindicator.CircularProgressIndicator
                             android:id="@+id/progressRing"
-                            android:layout_width="196dp"
-                            android:layout_height="196dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:indeterminate="false"
                             android:max="30"
                             app:indicatorColor="?attr/colorSecondary"
-                            app:indicatorSize="196dp"
+                            app:indicatorSize="184dp"
                             app:trackColor="@color/white_20"
                             app:trackCornerRadius="4dp"
                             app:trackThickness="5dp" />
