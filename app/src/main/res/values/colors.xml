@@ -1,15 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+
+    <!-- ============ 品牌色 ============ -->
+    <color name="brand_navy">#16324F</color>
+    <color name="brand_navy_deep">#0C1F33</color>
+    <color name="brand_green">#0E9F6E</color>
+    <color name="brand_violet">#6B5BE6</color>
+
+    <!-- ============ Material 3 语义色 · 浅色 ============ -->
+    <color name="color_primary">#16324F</color>
+    <color name="color_on_primary">#FFFFFF</color>
+    <color name="color_primary_container">#D9E5F3</color>
+    <color name="color_on_primary_container">#071B2E</color>
+
+    <color name="color_secondary">#0E9F6E</color>
+    <color name="color_on_secondary">#FFFFFF</color>
+    <color name="color_secondary_container">#C6F1E1</color>
+    <color name="color_on_secondary_container">#00382A</color>
+
+    <color name="color_tertiary">#5B4BC4</color>
+    <color name="color_on_tertiary">#FFFFFF</color>
+    <color name="color_tertiary_container">#E6E1FF</color>
+    <color name="color_on_tertiary_container">#1C1550</color>
+
+    <color name="color_error">#BA1A1A</color>
+    <color name="color_on_error">#FFFFFF</color>
+    <color name="color_error_container">#FFDAD6</color>
+    <color name="color_on_error_container">#410002</color>
+
+    <color name="background">#F4F6FA</color>
+    <color name="color_on_background">#0F1B2A</color>
+
+    <color name="color_surface">#FFFFFF</color>
+    <color name="color_on_surface">#0F1B2A</color>
+    <color name="color_surface_variant">#EBF0F7</color>
+    <color name="color_on_surface_variant">#586A7D</color>
+    <color name="color_surface_container">#FFFFFF</color>
+    <color name="color_surface_container_high">#F7F9FC</color>
+
+    <color name="color_outline">#C9D4E2</color>
+    <color name="color_outline_variant">#E3EAF3</color>
+
+    <color name="color_scrim">#99101828</color>
+
+    <!-- ============ 功能色 ============ -->
+    <color name="avatar_tint_1">#E3EDFB</color>
+    <color name="avatar_tint_2">#DDF5EA</color>
+    <color name="avatar_tint_3">#EDE8FF</color>
+    <color name="avatar_tint_4">#FFF0DC</color>
+
+    <color name="strength_weak">#E5484D</color>
+    <color name="strength_fair">#F2A13B</color>
+    <color name="strength_good">#2C9C6A</color>
+    <color name="strength_strong">#0E9F6E</color>
+
+    <!-- ============ 兼容旧引用 ============ -->
     <color name="white">#FFFFFFFF</color>
-    <color name="background">#FFFFFFFF</color>
-    <color name="yellow">#FFffCD43</color>
-    <color name="blue">#FF479CF7</color>
-    <color name="green">#FF1AFA29</color>
+    <color name="black">#FF000000</color>
+    <color name="blue">#FF16324F</color>
+    <color name="green">#FF0E9F6E</color>
+    <color name="yellow">#FFF2A13B</color>
+    <color name="teal_200">#FF0E9F6E</color>
+    <color name="purple_200">#FFE6E1FF</color>
+    <color name="purple_500">#FF5B4BC4</color>
+    <color name="purple_700">#FF3A2E8F</color>
+    <color name="teal_700">#FF086B4A</color>
+
+    <color name="white_20">#33FFFFFF</color>
+    <color name="white_70">#B3FFFFFF</color>
 
 </resources>

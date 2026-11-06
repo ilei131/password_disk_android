@@ -53,6 +53,12 @@
     <string name="failed_to_get_passwords">Failed to get passwords</string>
     <string name="network_error">Network error: %1$d</string>
     <string name="unknown_error">Unknown error</string>
+    <string name="register_username_taken">That username is already taken, try another one</string>
+    <string name="login_wrong_credentials">Incorrect username or password</string>
+    <string name="error_bad_request">Some fields are missing, please fill in the form again</string>
+    <string name="error_server">Server is temporarily unavailable, please try again later</string>
+    <string name="error_timeout">Connection timed out, check your network and retry</string>
+    <string name="error_unreachable">Can\'t reach the server, check your network and retry</string>
     <string name="failed_to_create_backup">Failed to create backup</string>
     <string name="failed_to_backup_to_cloud">Failed to backup to cloud</string>
     <string name="logged_in_successfully">Logged in successfully</string>
@@ -116,4 +122,127 @@
     <string name="notes_label">Notes: %1$s</string>
     <string name="copy_password_button">Copy Password</string>
     <string name="ok">OK</string>
+
+    <!-- ===== New UI strings ===== -->
+    <string name="app_tagline">An encrypted personal vault</string>
+    <string name="vault_title">My Vault</string>
+    <string name="count_records">%1$d items</string>
+    <string name="search_hint">Search titles, usernames or URLs</string>
+    <string name="clear_search">Clear search</string>
+    <string name="encrypted_badge">Encrypted</string>
+    <string name="encrypted">Encrypted</string>
+    <string name="new_entry">New</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="quick_actions_desc">What would you like to do?</string>
+    <string name="new_password">New password</string>
+    <string name="new_password_desc">Save a new account</string>
+    <string name="new_category">New category</string>
+    <string name="new_category_desc">Organize entries with icons</string>
+    <string name="two_factor_code">2FA code</string>
+    <string name="two_factor_desc">Generate a time-based code</string>
+    <string name="password_mask">••••••••</string>
+    <string name="password_placeholder_dots">Tap generate below</string>
+    <string name="more_actions">More actions</string>
+    <string name="close">Close</string>
+    <string name="edit">Edit</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="copy_username">Copy username</string>
+    <string name="copy_url">Copy URL</string>
+    <string name="empty_vault_title">Your vault is empty</string>
+    <string name="empty_vault_desc">Tap “New” at the bottom right to add your first account.\nEverything stays encrypted on this device.</string>
+    <string name="empty_search_title">No matches</string>
+    <string name="empty_search_desc">Try another keyword or clear the search.</string>
+    <string name="add_first_password">Add your first password</string>
+    <string name="login_subtitle">Enter your master password to unlock</string>
+    <string name="register_subtitle">Choose a strong master password — it cannot be recovered</string>
+    <string name="local_only_note">Your key never leaves this device</string>
+    <string name="section_basic">Basics</string>
+    <string name="section_security">Password</string>
+    <string name="section_details">Details</string>
+    <string name="local_encryption_note">Passwords are encrypted with AES before being stored locally.</string>
+    <string name="use_this_password">Use this password</string>
+    <string name="regenerate">Regenerate</string>
+    <string name="strength_unknown">Strength: —</string>
+    <string name="strength_weak">Strength: weak</string>
+    <string name="strength_fair">Strength: fair</string>
+    <string name="strength_good">Strength: good</string>
+    <string name="strength_strong">Strength: strong</string>
+    <string name="chars_unit">chars</string>
+    <string name="settings_subtitle">Vault, sync and backup</string>
+    <string name="local_vault">Local vault</string>
+    <string name="vault_summary">AES-256 · decrypted locally</string>
+    <string name="section_vault">Vault</string>
+    <string name="section_cloud">Cloud</string>
+    <string name="totp_row_desc">Generate a 6-digit code</string>
+    <string name="cloud_sync_row_desc">Pull and restore from cloud</string>
+    <string name="backup_row_desc">Upload current vault</string>
+    <string name="lock_vault">Lock vault</string>
+    <string name="version_label">Password Disk %1$s</string>
+    <string name="categories_subtitle">Group entries so they are easier to find</string>
+    <string name="no_categories_hint">No custom categories yet.\nTap the button below to add one.</string>
+    <string name="totp_page_desc">Scan a QR code or paste a Base32 secret, and get a code that refreshes every 30 seconds.</string>
+    <string name="totp_hint">Your provider supplies the secret. Codes are computed locally.</string>
+    <string name="copy_code">Copy code</string>
+    <string name="cloud_sync_intro">Sign in to restore your full vault from the cloud. You will need to unlock again afterwards.</string>
+    <string name="cloud_sync_warning">Syncing replaces local data. Make sure the cloud backup is the version you want.</string>
+    <string name="backup_intro">Upload the full vault with your cloud account, then restore it on another device.</string>
+    <string name="backup_warning">Backups contain encrypted data. Your master password is never uploaded.</string>
+    <string name="deleted_undo">Deleted “%1$s”</string>
+    <string name="undo">Undo</string>
+    <string name="category_delete_confirm">Deleting “%1$s” also deletes every entry inside it.</string>
+    <string name="logout_confirm">You will need your master password to unlock again.</string>
+    <string name="record_count_label">%1$d items</string>
+    <string name="default_category">Default</string>
+    <string name="no_notes">No notes</string>
+
+    <string name="all">All</string>
+    <string name="select_at_least_one_type">Pick at least one character type</string>
+    <string name="category_name_required">Enter a category name</string>
+    <string name="tab_2fa">2FA</string>
+    <string name="scan_qr">Scan QR code</string>
+    <string name="scan_qr_prompt">Align the QR code inside the frame</string>
+    <string name="scan_title">Scan 2FA QR code</string>
+    <string name="scan_hint">Point at the QR code from your provider — the secret fills in automatically</string>
+    <string name="scan_close">Close</string>
+    <string name="scan_torch_on">Turn on flashlight</string>
+    <string name="scan_torch_off">Turn off flashlight</string>
+    <string name="camera_permission_needed">Camera permission is required to scan QR codes</string>
+    <string name="invalid_qr_code">This QR code is not a 2FA secret</string>
+    <string name="scanned_from">Imported from QR · %1$s</string>
+    <string name="secret_helper">Paste the Base32 secret or scan the QR code from your provider</string>
+    <string name="section_legal">Legal &amp; data</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy_desc">How we collect, use and protect your data</string>
+    <string name="terms_of_service">Terms of service</string>
+    <string name="terms_of_service_desc">Rules for using Password Disk</string>
+    <string name="link_open_failed">No browser is available to open this link</string>
+
+    <!-- ===== 外部链接：发布前替换成你自己的站点地址 ===== -->
+    <string name="privacy_policy_url" translatable="false">https://example.com/password-disk/privacy</string>
+    <string name="terms_url" translatable="false">https://example.com/password-disk/terms</string>
+    <string name="support_email" translatable="false">support@example.com</string>
+    <string name="legal_consent_note">By continuing, you agree to our Privacy Policy and Terms of Service</string>
+    <!-- ===== 删除数据：本机 + 云端一起删 ===== -->
+    <string name="delete_data">Delete data</string>
+    <string name="delete_data_desc">Delete all saved passwords and cloud backup</string>
+    <string name="delete_data_title">Delete data?</string>
+    <string name="delete_data_message">This permanently deletes every password, category and your master password stored on this device, and returns to the setup screen. This cannot be undone.</string>
+    <string name="delete_data_message_with_cloud">This permanently deletes your cloud account, its vault backup and all password records on the server, and also clears everything saved on this device. This cannot be undone.</string>
+    <string name="delete_data_done">All data deleted</string>
+    <string name="delete_local_done">Local data deleted</string>
+    <string name="delete_data_confirm">Delete permanently</string>
+    <string name="delete_cloud_account_label">Cloud account: %1$s</string>
+    <string name="delete_cloud_password_hint">Enter this account\'s password to confirm. The cloud backup is deleted together with the data on this device.</string>
+
+    <!-- ===== 云端同步状态 / 删除错误提示 ===== -->
+    <string name="signed_in_as">Cloud account: %1$s</string>
+    <string name="last_sync_label">Last synced: %1$s</string>
+    <string name="never_synced">Not synced yet</string>
+    <string name="switch_account">Use another account</string>
+    <string name="delete_cloud_failed">Couldn\'t delete the cloud account. Check your network and try again.</string>
+    <string name="cloud_account_auth_failed">Incorrect username or password</string>
+    <string name="cloud_credentials_required">Enter your cloud account password</string>
+    <string name="cloud_account_password_hint">Cloud account password</string>
+    <string name="field_required">Required</string>
 </resources>

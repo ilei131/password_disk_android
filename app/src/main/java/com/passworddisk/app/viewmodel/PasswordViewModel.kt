@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.passworddisk.app.PasswordDiskApplication
 import com.passworddisk.app.R
+import com.passworddisk.app.cloud.CloudAccountStore
 import com.passworddisk.app.cloud.CloudSyncError
 import com.passworddisk.app.cloud.CloudSyncErrorException
 import com.passworddisk.app.cloud.CloudSyncManager
@@ -41,6 +42,10 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
 
     private val _totpCode = MutableLiveData<String?>()
     val totpCode: LiveData<String?> = _totpCode
+
+    /** 账号与全部数据被清空后置为 true，用于跳回解锁/初始化页 */
+    private val _vaultWiped = MutableLiveData<Boolean>()
+    val vaultWiped: LiveData<Boolean> = _vaultWiped
 
     init {
         val database = (application as PasswordDiskApplication).database
@@ -213,6 +218,8 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = CloudSyncManager.register(username, password)
             result.onSuccess {
+                // 记住用户名，同步页下次只需输入密码
+                CloudAccountStore.remember(getApplication(), username)
                 _successMessage.value = getApplication<Application>().getString(R.string.registered_successfully)
             }.onFailure {
                 _errorMessage.value = getLocalizedErrorMessage(it)
@@ -224,6 +231,7 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = CloudSyncManager.login(username, password, backup)
             result.onSuccess {
+                CloudAccountStore.remember(getApplication(), username)
                 _successMessage.value = getApplication<Application>().getString(R.string.logged_in_successfully)
             }.onFailure {
                 _errorMessage.value = getLocalizedErrorMessage(it)
@@ -235,6 +243,8 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val result = CloudSyncManager.sync(username, password)
             result.onSuccess { response ->
+                // 只要能连上服务端并完成这次同步，就记录时间，供同步页展示
+                CloudAccountStore.markSynced(getApplication(), username)
                 // 处理返回的密码数据
                 if (response.backup != null) {
                     // 使用返回的备份数据恢复密码库
@@ -264,6 +274,7 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
                     // 使用 login 接口上传备份数据
                     val result = CloudSyncManager.login(username, password, backup)
                     result.onSuccess {
+                        CloudAccountStore.markSynced(getApplication(), username)
                         _successMessage.value = getApplication<Application>().getString(R.string.backup_successful)
                     }.onFailure {
                         _errorMessage.value = getLocalizedErrorMessage(it)
@@ -284,6 +295,14 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
                 is CloudSyncError.LoginFailed -> getApplication<Application>().getString(R.string.login_failed)
                 is CloudSyncError.SyncFailed -> getApplication<Application>().getString(R.string.sync_failed)
                 is CloudSyncError.GetPasswordsFailed -> getApplication<Application>().getString(R.string.failed_to_get_passwords)
+                is CloudSyncError.AccountAuthFailed -> getApplication<Application>().getString(R.string.cloud_account_auth_failed)
+                is CloudSyncError.AccountDeletionFailed -> getApplication<Application>().getString(R.string.delete_cloud_failed)
+                is CloudSyncError.UsernameTaken -> getApplication<Application>().getString(R.string.register_username_taken)
+                is CloudSyncError.InvalidCredentials -> getApplication<Application>().getString(R.string.login_wrong_credentials)
+                is CloudSyncError.BadRequest -> getApplication<Application>().getString(R.string.error_bad_request)
+                is CloudSyncError.ServerError -> getApplication<Application>().getString(R.string.error_server)
+                is CloudSyncError.ConnectionTimeout -> getApplication<Application>().getString(R.string.error_timeout)
+                is CloudSyncError.Unreachable -> getApplication<Application>().getString(R.string.error_unreachable)
                 is CloudSyncError.NetworkError -> getApplication<Application>().getString(R.string.network_error, throwable.error.statusCode)
                 is CloudSyncError.UnknownError -> getApplication<Application>().getString(R.string.unknown_error)
             }
@@ -326,5 +345,64 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
     fun clearMessages() {
         _errorMessage.value = null
         _successMessage.value = null
+    }
+
+    fun consumeVaultWiped() {
+        _vaultWiped.value = false
+    }
+
+    /**
+     * 只清空本机密码库（全部密码、分类、主密码），不触碰云端备份。
+     * 清空后回到初始化页，可以重新设置主密码；如果之前做过云端备份，之后仍可用云端账号恢复。
+     */
+    fun clearLocalVault() {
+        viewModelScope.launch {
+            if (!repository.wipeAll()) {
+                _errorMessage.value = getApplication<Application>().getString(R.string.unknown_error)
+                return@launch
+            }
+            _isAuthenticated.value = false
+            _isVaultInitialized.value = false
+            _successMessage.value = getApplication<Application>().getString(R.string.delete_local_done)
+            _vaultWiped.value = true
+        }
+    }
+
+    /**
+     * 删除全部数据：本机密码库 + 云端账号（仅当本机记录过云端账号时）。
+     *
+     * 云端只要求输入密码：用户名在注册 / 首次同步成功时已经记在 [CloudAccountStore] 里。
+     * 顺序仍是先删云端、成功后才清本机——反过来一旦网络失败，
+     * 本机已经清空并跳回初始化页，用户就没有机会重试云端那次删除了。
+     */
+    fun deleteCloudAndLocalData(password: String) {
+        val app = getApplication<Application>()
+        val username = CloudAccountStore.username(app)
+        if (username == null) {
+            // 从未用过云端账号，只删本机即可，不需要任何凭据
+            clearLocalVault()
+            return
+        }
+        if (password.isEmpty()) {
+            _errorMessage.value = app.getString(R.string.cloud_credentials_required)
+            return
+        }
+        viewModelScope.launch {
+            CloudSyncManager.deleteAccount(username, password)
+                .onSuccess {
+                    CloudAccountStore.clear(app)
+                    if (!repository.wipeAll()) {
+                        _errorMessage.value = app.getString(R.string.unknown_error)
+                        return@onSuccess
+                    }
+                    _isAuthenticated.value = false
+                    _isVaultInitialized.value = false
+                    _successMessage.value = app.getString(R.string.delete_data_done)
+                    _vaultWiped.value = true
+                }
+                .onFailure {
+                    _errorMessage.value = getLocalizedErrorMessage(it)
+                }
+        }
     }
 }

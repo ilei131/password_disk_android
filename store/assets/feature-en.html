@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 1024px; height: 500px; overflow: hidden;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    background: #0C1F33;
+    position: relative;
+  }
+  .bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(680px 520px at 8% 18%, rgba(14,159,110,0.20) 0%, rgba(14,159,110,0) 68%),
+      linear-gradient(118deg, #0C1F33 0%, #16324F 46%, #1D4467 100%);
+  }
+  .grid {
+    position: absolute; inset: 0; opacity: 0.16;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.18) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(circle at 78% 50%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(circle at 78% 50%, #000 0%, transparent 72%);
+  }
+  .sheet {
+    position: absolute; right: -60px; bottom: -120px;
+    width: 520px; height: 520px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 32%, rgba(255,255,255,0.06), rgba(255,255,255,0.01) 60%, transparent 74%);
+  }
+  .wrap {
+    position: absolute; inset: 0;
+    display: flex; align-items: center;
+    padding: 0 96px 0 92px;
+    gap: 54px;
+  }
+  .mark {
+    width: 176px; height: 176px; flex: 0 0 auto;
+    border-radius: 42px;
+    background: linear-gradient(158deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06));
+    box-shadow: 0 26px 60px rgba(3,14,26,0.55), inset 0 1px 0 rgba(255,255,255,0.28);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mark svg { width: 112px; height: 112px; display: block; }
+  .copy { position: relative; }
+  h1 {
+    margin: 0; color: #FFFFFF; font-size: 62px; line-height: 1.06;
+    letter-spacing: -1.6px; font-weight: 700;
+  }
+  h1 span { color: #34D399; }
+  p {
+    margin: 18px 0 0; color: rgba(255,255,255,0.74);
+    font-size: 25px; line-height: 1.5; font-weight: 400; letter-spacing: 0.2px;
+  }
+  .tags { margin-top: 26px; display: flex; gap: 12px; }
+  .tag {
+    font-size: 17px; color: rgba(255,255,255,0.88);
+    border: 1px solid rgba(255,255,255,0.26);
+    background: rgba(255,255,255,0.07);
+    padding: 8px 16px; border-radius: 999px; letter-spacing: 0.4px;
+  }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="sheet"></div>
+  <div class="wrap">
+    <div class="mark">
+      <svg viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+        <path d="M54,22L82,33V54C82,71.5 69.5,84.5 54,90C38.5,84.5 26,71.5 26,54V33L54,22Z" fill="#FFFFFF"/>
+        <path d="M46,50a8,8 0 1,0 16,0a8,8 0 1,0 -16,0Z" fill="#16324F"/>
+        <path d="M50.5,56h7v14h-7z" fill="#16324F"/>
+        <circle cx="54" cy="50" r="4.5" fill="#0E9F6E"/>
+      </svg>
+    </div>
+    <div class="copy">
+      <h1>Password <span>Disk</span></h1>
+      <p>End-to-end encrypted vault<br>Passwords · 2FA codes · Cloud backup</p>
+      <div class="tags">
+        <div class="tag">Offline first</div>
+        <div class="tag">AES encrypted</div>
+        <div class="tag">No ads</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

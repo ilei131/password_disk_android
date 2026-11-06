@@ -1,30 +1,70 @@
-<resources>
-    <style name="Theme.PasswordDisk" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/blue</item>
-        <item name="colorPrimaryDark">@color/blue</item>
-        <item name="colorAccent">@color/teal_200</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 基础主题：颜色与组件样式。深浅色差异仅在 Theme.PasswordDisk 中覆盖。 -->
+    <style name="Base.Theme.PasswordDisk" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorPrimaryContainer">@color/color_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/color_on_primary_container</item>
+
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/color_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/color_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/color_tertiary</item>
+        <item name="colorOnTertiary">@color/color_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/color_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/color_on_tertiary_container</item>
+
+        <item name="colorError">@color/color_error</item>
+        <item name="colorOnError">@color/color_on_error</item>
+        <item name="colorErrorContainer">@color/color_error_container</item>
+        <item name="colorOnErrorContainer">@color/color_on_error_container</item>
+
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorSurfaceVariant">@color/color_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/color_on_surface_variant</item>
+        <item name="colorOutline">@color/color_outline</item>
+
         <item name="android:windowBackground">@color/background</item>
-        <item name="bottomNavigationStyle">@style/BottomNavStyle</item>
-        <item name="materialCardViewStyle">@style/CardStyle</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+
+        <item name="bottomNavigationStyle">@style/Widget.PasswordDisk.BottomNav</item>
+        <item name="materialCardViewStyle">@style/Widget.PasswordDisk.Card</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.PasswordDisk.Dialog</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.PasswordDisk.BottomSheet</item>
+        <item name="materialButtonStyle">@style/Widget.PasswordDisk.Button</item>
+        <item name="chipStyle">@style/Widget.PasswordDisk.Chip</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="Theme.PasswordDisk.Splash" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/blue</item>
-        <item name="android:statusBarColor">@color/blue</item>
-        <item name="android:navigationBarColor">@color/blue</item>
+    <style name="Theme.PasswordDisk" parent="Base.Theme.PasswordDisk">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
-    <style name="BottomNavStyle" parent="Widget.Material3.BottomNavigationView">
-        <item name="android:background">@color/white</item>
-        <item name="itemActiveIndicatorStyle">@style/BottomNavIndicatorStyle</item>
+    <!-- 扫码页：黑底沉浸式，状态栏图标转白 -->
+    <style name="Theme.PasswordDisk.Scanner" parent="Theme.PasswordDisk">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
     </style>
 
-    <style name="BottomNavIndicatorStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">#E0E0E0</item>
+    <!-- 启动页：深色渐变，避免白屏闪烁 -->
+    <style name="Theme.PasswordDisk.Splash" parent="Theme.PasswordDisk">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
     </style>
 
-    <style name="CardStyle" parent="Widget.Material3.CardView.Elevated">
-        <item name="cardBackgroundColor">#F5F5F5</item>
-    </style>
 </resources>

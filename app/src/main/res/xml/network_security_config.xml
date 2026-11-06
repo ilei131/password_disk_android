@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  仅允许 HTTPS。云端同步接口为 HTTPS，应用不加载任何明文 HTTP 资源。
+  这样即使误配明文地址，系统也会直接拒绝，避免凭据在链路上被窃听。
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

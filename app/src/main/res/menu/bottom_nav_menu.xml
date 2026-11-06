@@ -7,6 +7,11 @@
         android:icon="@drawable/home_icon" />
 
     <item
+        android:id="@+id/totpFragment"
+        android:title="@string/tab_2fa"
+        android:icon="@drawable/totp_icon" />
+
+    <item
         android:id="@+id/settingsFragment"
         android:title="@string/settings"
         android:icon="@drawable/settings_icon" />

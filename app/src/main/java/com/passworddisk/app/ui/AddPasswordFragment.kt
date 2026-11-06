@@ -1,11 +1,12 @@
 package com.passworddisk.app.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -16,14 +17,17 @@ import com.passworddisk.app.R
 import com.passworddisk.app.data.Category
 import com.passworddisk.app.databinding.FragmentAddPasswordBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class AddPasswordFragment : Fragment() {
+
     private var _binding: FragmentAddPasswordBinding? = null
     private val binding get() = _binding!!
+
     private val viewModel: PasswordViewModel by activityViewModels()
+
     private var categories: List<Category> = emptyList()
+    private var selectedCategoryId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,136 +41,127 @@ class AddPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupCategorySpinner()
+        binding.titleText.text = getString(R.string.add_password)
+        binding.saveButton.text = getString(R.string.save)
+
         setupButtons()
-        observeData()
+        setupGeneratorResult()
+        observeCategories()
+        observeMessages()
+
+        // 键盘弹出时把正在编辑的字段滚回可视区域
+        Ui.keepFocusedFieldVisible(binding.contentScroll, binding.formContainer)
     }
 
-    private fun setupCategorySpinner() {
+    private fun setupButtons() {
+        binding.backButton.setOnClickListener { close() }
+        binding.cancelButton.setOnClickListener { close() }
+        binding.generatePasswordButton.setOnClickListener { showGenerator() }
+        binding.saveButton.setOnClickListener { save() }
+    }
+
+    private fun setupGeneratorResult() {
+        childFragmentManager.setFragmentResultListener(
+            GeneratorSheet.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            bundle.getString(GeneratorSheet.RESULT_PASSWORD)?.let { generated ->
+                binding.passwordInput.setText(generated)
+                binding.passwordLayout.error = null
+            }
+        }
+    }
+
+    private fun observeCategories() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allCategories.collect { cats ->
-                    categories = cats.filter { it.id != "1" }
+                    categories = cats.filter { it.id != ALL_CATEGORY_ID }
+                    if (categories.isEmpty()) {
+                        binding.categoryLayout.isEnabled = false
+                        binding.categoryDropdown.setText(getString(R.string.no_categories), false)
+                        return@collect
+                    }
+                    binding.categoryLayout.isEnabled = true
                     val adapter = ArrayAdapter(
                         requireContext(),
-                        android.R.layout.simple_spinner_item,
+                        android.R.layout.simple_list_item_1,
                         categories.map { it.name }
                     )
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    binding.categorySpinner.adapter = adapter
+                    binding.categoryDropdown.setAdapter(adapter)
+                    binding.categoryDropdown.setOnItemClickListener { _, _, position, _ ->
+                        selectedCategoryId = categories.getOrNull(position)?.id
+                    }
+
+                    val index = categories.indexOfFirst { it.id == selectedCategoryId }
+                    val resolved = if (index >= 0) index else 0
+                    selectedCategoryId = categories[resolved].id
+                    binding.categoryDropdown.setText(categories[resolved].name, false)
                 }
             }
         }
     }
 
-    private fun setupButtons() {
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        binding.generatePasswordButton.setOnClickListener {
-            showPasswordGeneratorDialog()
-        }
-
-        binding.saveButton.setOnClickListener {
-            savePassword()
-        }
-
-        binding.cancelButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
-    }
-
-    private fun showPasswordGeneratorDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_password_generator, null)
-        val lengthInput = dialogView.findViewById<com.google.android.material.slider.Slider>(R.id.lengthSlider)
-        val lengthValue = dialogView.findViewById<android.widget.TextView>(R.id.lengthValue)
-        val uppercaseCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.uppercaseCheck)
-        val lowercaseCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.lowercaseCheck)
-        val numbersCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.numbersCheck)
-        val symbolsCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.symbolsCheck)
-        val resultText = dialogView.findViewById<android.widget.TextView>(R.id.generatedPasswordText)
-
-        // 监听滑块变化，更新长度值
-        lengthInput.addOnChangeListener { _, value, _ ->
-            lengthValue.text = value.toInt().toString()
-        }
-
-        uppercaseCheck.isChecked = true
-        lowercaseCheck.isChecked = true
-        numbersCheck.isChecked = true
-        symbolsCheck.isChecked = true
-
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.generate_password_title))
-            .setView(dialogView)
-            .setPositiveButton(getString(R.string.use)) { _, _ ->
-                binding.passwordInput.setText(resultText.text)
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .create()
-
-        dialogView.findViewById<android.widget.Button>(R.id.generateButton).setOnClickListener {
-            viewModel.generatePassword(
-                lengthInput.value.toInt(),
-                uppercaseCheck.isChecked,
-                lowercaseCheck.isChecked,
-                numbersCheck.isChecked,
-                symbolsCheck.isChecked
-            )
-        }
-
-        viewModel.generatedPassword.observe(viewLifecycleOwner) { password ->
-            password?.let {
-                resultText.text = it
-            }
-        }
-
-        dialog.show()
-    }
-
-    private fun savePassword() {
-        val title = binding.titleInput.text.toString().trim()
-        val username = binding.usernameInput.text.toString().trim()
-        val password = binding.passwordInput.text.toString()
-        val url = binding.urlInput.text.toString().trim()
-        val notes = binding.notesInput.text.toString().trim()
-
-        if (title.isEmpty()) {
-            binding.titleLayout.error = getString(R.string.title_required)
-            return
-        }
-        binding.titleLayout.error = null
-
-        if (password.isEmpty()) {
-            binding.passwordLayout.error = getString(R.string.password_required_field)
-            return
-        }
-        binding.passwordLayout.error = null
-
-        val selectedPosition = binding.categorySpinner.selectedItemPosition
-        val categoryId = if (selectedPosition >= 0 && selectedPosition < categories.size) {
-            categories[selectedPosition].id
-        } else {
-            "2"
-        }
-
-        viewModel.addPassword(title, username, password, url, notes, categoryId)
-        Toast.makeText(requireContext(), getString(R.string.password_saved), Toast.LENGTH_SHORT).show()
-        findNavController().navigateUp()
-    }
-
-    private fun observeData() {
+    private fun observeMessages() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                if (_binding != null) {
+                    Notify.error(binding.root, it)
+                }
                 viewModel.clearMessages()
             }
         }
     }
 
+    private fun showGenerator() {
+        hideKeyboard()
+        GeneratorSheet().show(childFragmentManager, "generator")
+    }
+
+    private fun save() {
+        val title = binding.titleInput.text?.toString()?.trim().orEmpty()
+        val username = binding.usernameInput.text?.toString()?.trim().orEmpty()
+        val password = binding.passwordInput.text?.toString().orEmpty()
+        val url = binding.urlInput.text?.toString()?.trim().orEmpty()
+        val notes = binding.notesInput.text?.toString()?.trim().orEmpty()
+
+        var valid = true
+        if (title.isEmpty()) {
+            binding.titleLayout.error = getString(R.string.title_required)
+            valid = false
+        } else {
+            binding.titleLayout.error = null
+        }
+        if (password.isEmpty()) {
+            binding.passwordLayout.error = getString(R.string.password_required_field)
+            valid = false
+        } else {
+            binding.passwordLayout.error = null
+        }
+        if (!valid) return
+
+        val categoryId = selectedCategoryId ?: categories.firstOrNull()?.id ?: ALL_CATEGORY_ID
+        hideKeyboard()
+        viewModel.addPassword(title, username, password, url, notes, categoryId)
+        findNavController().navigateUp()
+    }
+
+    private fun close() {
+        hideKeyboard()
+        findNavController().navigateUp()
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private companion object {
+        const val ALL_CATEGORY_ID = "1"
     }
 }

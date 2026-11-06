@@ -1,11 +1,12 @@
 package com.passworddisk.app.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -17,16 +18,20 @@ import com.passworddisk.app.data.Category
 import com.passworddisk.app.data.PasswordItem
 import com.passworddisk.app.databinding.FragmentAddPasswordBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class EditPasswordFragment : Fragment() {
+
     private var _binding: FragmentAddPasswordBinding? = null
     private val binding get() = _binding!!
+
     private val viewModel: PasswordViewModel by activityViewModels()
+
     private var categories: List<Category> = emptyList()
     private var currentPassword: PasswordItem? = null
-    private var decryptedPassword: String = ""
+    private var selectedCategoryId: String? = null
+    private var loaded = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,177 +45,159 @@ class EditPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.saveButton.text = getString(R.string.update)
-        // 修改标题为编辑密码
         binding.titleText.text = getString(R.string.edit_password)
+        binding.saveButton.text = getString(R.string.update)
 
-        val passwordId = arguments?.getString("passwordId")
-        passwordId?.let { loadPassword(it) }
-
-        setupCategorySpinner()
         setupButtons()
-        observeData()
-    }
+        setupGeneratorResult()
+        loadPassword()
+        observeCategories()
+        observeMessages()
 
-    private fun loadPassword(passwordId: String) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.allPasswords.collect { passwords ->
-                val password = passwords.find { it.id == passwordId }
-                password?.let {
-                    currentPassword = it
-                    binding.titleInput.setText(it.title)
-                    binding.usernameInput.setText(it.username)
-                    binding.urlInput.setText(it.url)
-                    binding.notesInput.setText(it.notes)
-
-                    decryptedPassword = viewModel.decryptPassword(it.password) ?: ""
-                    binding.passwordInput.setText(decryptedPassword)
-                }
-            }
-        }
-    }
-
-    private fun setupCategorySpinner() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.allCategories.collect { cats ->
-                    categories = cats.filter { it.id != "1" }
-                    val adapter = ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_spinner_item,
-                        categories.map { it.name }
-                    )
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    binding.categorySpinner.adapter = adapter
-
-                    currentPassword?.let { password ->
-                        val position = categories.indexOfFirst { it.id == password.categoryId }
-                        if (position >= 0) {
-                            binding.categorySpinner.setSelection(position)
-                        }
-                    }
-                }
-            }
-        }
+        // 键盘弹出时把正在编辑的字段滚回可视区域
+        Ui.keepFocusedFieldVisible(binding.contentScroll, binding.formContainer)
     }
 
     private fun setupButtons() {
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        binding.generatePasswordButton.setOnClickListener {
-            showPasswordGeneratorDialog()
-        }
-
-        binding.saveButton.setOnClickListener {
-            updatePassword()
-        }
-
-        binding.cancelButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        binding.backButton.setOnClickListener { close() }
+        binding.cancelButton.setOnClickListener { close() }
+        binding.generatePasswordButton.setOnClickListener { showGenerator() }
+        binding.saveButton.setOnClickListener { update() }
     }
 
-    private fun showPasswordGeneratorDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_password_generator, null)
-        
-        // 添加滑块变化监听器
-        val lengthSlider = dialogView.findViewById<com.google.android.material.slider.Slider>(R.id.lengthSlider)
-        val lengthValue = dialogView.findViewById<android.widget.TextView>(R.id.lengthValue)
-        
-        lengthSlider.addOnChangeListener { _, value, _ ->
-            lengthValue.text = value.toInt().toString()
-        }
-
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.generate_password_title))
-            .setView(dialogView)
-            .setPositiveButton(getString(R.string.use)) { _, _ ->
-                val resultText = dialogView.findViewById<android.widget.TextView>(R.id.generatedPasswordText)
-                binding.passwordInput.setText(resultText.text)
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .create()
-
-        dialogView.findViewById<android.widget.Button>(R.id.generateButton).setOnClickListener {
-            val lengthSlider = dialogView.findViewById<com.google.android.material.slider.Slider>(R.id.lengthSlider)
-            val uppercaseCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.uppercaseCheck)
-            val lowercaseCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.lowercaseCheck)
-            val numbersCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.numbersCheck)
-            val symbolsCheck = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.symbolsCheck)
-
-            viewModel.generatePassword(
-                lengthSlider.value.toInt(),
-                uppercaseCheck.isChecked,
-                lowercaseCheck.isChecked,
-                numbersCheck.isChecked,
-                symbolsCheck.isChecked
-            )
-        }
-
-        viewModel.generatedPassword.observe(viewLifecycleOwner) { password ->
-            password?.let {
-                val resultText = dialogView.findViewById<android.widget.TextView>(R.id.generatedPasswordText)
-                resultText.text = it
+    private fun setupGeneratorResult() {
+        childFragmentManager.setFragmentResultListener(
+            GeneratorSheet.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            bundle.getString(GeneratorSheet.RESULT_PASSWORD)?.let { generated ->
+                binding.passwordInput.setText(generated)
+                binding.passwordLayout.error = null
             }
         }
-
-        dialog.show()
     }
 
-    private fun updatePassword() {
-        val password = currentPassword ?: return
+    private fun loadPassword() {
+        val passwordId = arguments?.getString("passwordId") ?: return
+        viewLifecycleOwner.lifecycleScope.launch {
+            val item = viewModel.allPasswords.first().firstOrNull { it.id == passwordId } ?: return@launch
+            if (_binding == null || loaded) return@launch
+            loaded = true
+            currentPassword = item
+            selectedCategoryId = item.categoryId
 
-        val title = binding.titleInput.text.toString().trim()
-        val username = binding.usernameInput.text.toString().trim()
-        val newPassword = binding.passwordInput.text.toString()
-        val url = binding.urlInput.text.toString().trim()
-        val notes = binding.notesInput.text.toString().trim()
+            binding.titleInput.setText(item.title)
+            binding.usernameInput.setText(item.username)
+            binding.urlInput.setText(item.url)
+            binding.notesInput.setText(item.notes)
+            binding.passwordInput.setText(viewModel.decryptPassword(item.password).orEmpty())
 
-        if (title.isEmpty()) {
-            binding.titleLayout.error = getString(R.string.title_required)
-            return
+            applyCategorySelection()
         }
-        binding.titleLayout.error = null
-
-        if (newPassword.isEmpty()) {
-            binding.passwordLayout.error = getString(R.string.password_required_field)
-            return
-        }
-        binding.passwordLayout.error = null
-
-        val selectedPosition = binding.categorySpinner.selectedItemPosition
-        val categoryId = if (selectedPosition >= 0 && selectedPosition < categories.size) {
-            categories[selectedPosition].id
-        } else {
-            password.categoryId
-        }
-
-        val updatedPassword = password.copy(
-            title = title,
-            username = username,
-            url = url,
-            notes = notes,
-            categoryId = categoryId
-        )
-
-        viewModel.updatePassword(updatedPassword, newPassword)
-        Toast.makeText(requireContext(), getString(R.string.password_updated), Toast.LENGTH_SHORT).show()
-        findNavController().navigateUp()
     }
 
-    private fun observeData() {
+    private fun observeCategories() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.allCategories.collect { cats ->
+                    categories = cats.filter { it.id != ALL_CATEGORY_ID }
+                    if (categories.isEmpty()) {
+                        binding.categoryLayout.isEnabled = false
+                        binding.categoryDropdown.setText(getString(R.string.no_categories), false)
+                        return@collect
+                    }
+                    binding.categoryLayout.isEnabled = true
+                    val adapter = ArrayAdapter(
+                        requireContext(),
+                        android.R.layout.simple_list_item_1,
+                        categories.map { it.name }
+                    )
+                    binding.categoryDropdown.setAdapter(adapter)
+                    binding.categoryDropdown.setOnItemClickListener { _, _, position, _ ->
+                        selectedCategoryId = categories.getOrNull(position)?.id
+                    }
+                    applyCategorySelection()
+                }
+            }
+        }
+    }
+
+    private fun applyCategorySelection() {
+        if (_binding == null || categories.isEmpty()) return
+        val index = categories.indexOfFirst { it.id == selectedCategoryId }
+        val resolved = if (index >= 0) index else 0
+        selectedCategoryId = categories[resolved].id
+        binding.categoryDropdown.setText(categories[resolved].name, false)
+    }
+
+    private fun observeMessages() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                if (_binding != null) {
+                    Notify.error(binding.root, it)
+                }
                 viewModel.clearMessages()
             }
         }
     }
 
+    private fun showGenerator() {
+        hideKeyboard()
+        GeneratorSheet().show(childFragmentManager, "generator")
+    }
+
+    private fun update() {
+        val item = currentPassword ?: return
+
+        val title = binding.titleInput.text?.toString()?.trim().orEmpty()
+        val username = binding.usernameInput.text?.toString()?.trim().orEmpty()
+        val password = binding.passwordInput.text?.toString().orEmpty()
+        val url = binding.urlInput.text?.toString()?.trim().orEmpty()
+        val notes = binding.notesInput.text?.toString()?.trim().orEmpty()
+
+        var valid = true
+        if (title.isEmpty()) {
+            binding.titleLayout.error = getString(R.string.title_required)
+            valid = false
+        } else {
+            binding.titleLayout.error = null
+        }
+        if (password.isEmpty()) {
+            binding.passwordLayout.error = getString(R.string.password_required_field)
+            valid = false
+        } else {
+            binding.passwordLayout.error = null
+        }
+        if (!valid) return
+
+        val updated = item.copy(
+            title = title,
+            username = username,
+            url = url,
+            notes = notes,
+            categoryId = selectedCategoryId ?: item.categoryId
+        )
+        hideKeyboard()
+        viewModel.updatePassword(updated, password)
+        findNavController().navigateUp()
+    }
+
+    private fun close() {
+        hideKeyboard()
+        findNavController().navigateUp()
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private companion object {
+        const val ALL_CATEGORY_ID = "1"
     }
 }

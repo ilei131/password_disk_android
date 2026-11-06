@@ -35,6 +35,9 @@
             android:id="@+id/action_home_to_totp"
             app:destination="@id/totpFragment" />
         <action
+            android:id="@+id/action_home_to_categories"
+            app:destination="@id/categoriesFragment" />
+        <action
             android:id="@+id/action_home_to_auth"
             app:destination="@id/authFragment"
             app:popUpTo="@id/homeFragment"
@@ -72,8 +75,10 @@
             android:id="@+id/action_settings_to_backupToCloud"
             app:destination="@id/backupToCloudFragment" />
         <action
-            android:id="@+id/action_settings_to_totp"
-            app:destination="@id/totpFragment" />
+            android:id="@+id/action_settings_to_auth"
+            app:destination="@id/authFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

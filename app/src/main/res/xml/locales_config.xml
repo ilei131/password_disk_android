@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  按应用语言选择：Android 13+ 在「设置 → 应用 → 语言」中可切换
+  目前提供英文（默认）与简体中文
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="zh-Hans" />
+</locale-config>

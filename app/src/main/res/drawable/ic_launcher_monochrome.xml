@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 单色版本供 Android 13+ 主题图标使用；镂空钥匙孔用 evenOdd 挖出。
+     缩放系数与 ic_launcher_foreground 保持一致，否则主题图标会比普通图标大一圈。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group android:translateY="-2">
+
+        <group
+            android:pivotX="54"
+            android:pivotY="56"
+            android:scaleX="0.75"
+            android:scaleY="0.75">
+
+            <path
+                android:fillColor="#FFFFFF"
+                android:fillType="evenOdd"
+                android:pathData="M54,22L82,33V54C82,71.5 69.5,84.5 54,90C38.5,84.5 26,71.5 26,54V33L54,22Z M46,50a8,8 0 1,0 16,0a8,8 0 1,0 -16,0Z M50.5,56h7v14h-7z" />
+
+        </group>
+
+    </group>
+
+</vector>

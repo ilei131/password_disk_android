@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 间距 -->
+    <dimen name="space_xxs">2dp</dimen>
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">12dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
+    <dimen name="space_xl">20dp</dimen>
+    <dimen name="space_2xl">24dp</dimen>
+    <dimen name="space_3xl">32dp</dimen>
+
+    <!-- 圆角 -->
+    <dimen name="radius_xs">10dp</dimen>
+    <dimen name="radius_sm">14dp</dimen>
+    <dimen name="radius_md">18dp</dimen>
+    <dimen name="radius_lg">22dp</dimen>
+    <dimen name="radius_xl">28dp</dimen>
+
+    <!-- 组件 -->
+    <dimen name="screen_padding">20dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="avatar_size">46dp</dimen>
+    <dimen name="touch_target">48dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="top_bar_height">56dp</dimen>
+    <dimen name="icon_size">22dp</dimen>
+</resources>

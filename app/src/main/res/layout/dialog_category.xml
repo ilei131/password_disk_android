@@ -1,47 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="@dimen/space_xl"
+    android:paddingTop="@dimen/space_sm"
+    android:paddingEnd="@dimen/space_xl"
+    android:paddingBottom="@dimen/space_sm">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/categoryNameLayout"
+        style="@style/Widget.PasswordDisk.TextInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/category_name_hint"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+        android:hint="@string/category_name_hint">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/categoryNameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:maxLines="1"
+            android:textSize="15sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="@dimen/space_lg"
+        android:text="@string/select_icon"
+        android:textAppearance="@style/TextAppearance.PasswordDisk.Overline" />
+
+    <GridLayout
+        android:id="@+id/iconContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="vertical">
+        android:layout_marginTop="@dimen/space_sm"
+        android:columnCount="5" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_icon"
-            android:textSize="14sp"
-            android:textColor="?android:attr/textColorSecondary" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/categoryIconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="📁"
-            android:textSize="24sp"
-            android:padding="12dp" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/previewLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="@dimen/space_md"
+        android:textAppearance="@style/TextAppearance.PasswordDisk.Caption" />
 
 </LinearLayout>

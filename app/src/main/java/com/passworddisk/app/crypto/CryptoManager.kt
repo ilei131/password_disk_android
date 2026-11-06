@@ -37,18 +37,9 @@ object CryptoManager {
     fun deriveKey(masterPassword: String, salt: String): ByteArray {
         val digest = MessageDigest.getInstance("SHA-256")
         digest.update(masterPassword.toByteArray(Charsets.UTF_8))
-        try {
-            // 尝试将 salt 作为十六进制字符串解码，与 Rust 代码保持一致
-            val saltBytes = salt.fromHex()
-            println("Salt decoded successfully: ${saltBytes.size} bytes, salt: $salt")
-            digest.update(saltBytes)
-        } catch (e: Exception) {
-            // 如果解码失败，打印错误信息
-            println("Salt decoding failed: ${e.message}, salt: $salt")
-            throw e
-        }
+        // 与 Rust 端保持一致：salt 以十六进制字符串存储
+        digest.update(salt.fromHex())
         val key = digest.digest()
-        println("Generated key: ${key.toHex().take(10)}...")
         return key
     }
 

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy · Password Disk</title>
+<!--
+  Replace before publishing (search for [ ):
+    1. [Developer name]
+    2. [support@example.com]
+    3. [Cloudflare global edge network] → actual hosting location
+    4. Effective / last-updated date
+  Then use this page's URL in Play Console › App content › Privacy policy
+  and in the app: res/values/strings.xml → privacy_policy_url
+-->
+<style>
+  :root {
+    --navy: #16324F;
+    --navy-deep: #0C1F33;
+    --green: #0E9F6E;
+    --text: #1B2733;
+    --muted: #5A6B7B;
+    --line: #E3E8EE;
+    --bg: #F7F9FB;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.72;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: linear-gradient(120deg, var(--navy-deep), var(--navy) 55%, #1D4467);
+    color: #fff;
+    padding: 56px 24px 44px;
+  }
+  .head-inner { max-width: 760px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .brand svg { width: 34px; height: 34px; }
+  .brand span { font-size: 15px; letter-spacing: .5px; opacity: .82; }
+  h1 { margin: 0 0 10px; font-size: 34px; line-height: 1.25; letter-spacing: -.4px; }
+  .meta { font-size: 13.5px; opacity: .72; }
+  main { max-width: 760px; margin: -24px auto 0; padding: 0 24px 72px; }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 30px 30px 10px; box-shadow: 0 10px 30px rgba(16,38,58,.06);
+  }
+  h2 { font-size: 19px; margin: 34px 0 12px; letter-spacing: -.2px; }
+  h2:first-of-type { margin-top: 8px; }
+  h3 { font-size: 15.5px; margin: 22px 0 8px; color: var(--navy); }
+  p, li { font-size: 15px; }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  .lead {
+    background: #F1F6FA; border-left: 3px solid var(--green);
+    border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 0 0 8px;
+    font-size: 14.5px; color: #24405a;
+  }
+  .lead strong { color: var(--navy); }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 4px; font-size: 14px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; background: #FAFCFD; }
+  code {
+    background: #EEF3F7; padding: 1px 6px; border-radius: 5px;
+    font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  footer { max-width: 760px; margin: 0 auto; padding: 26px 24px 60px; color: var(--muted); font-size: 13px; }
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @media (max-width: 560px) {
+    header { padding: 40px 20px 34px; }
+    h1 { font-size: 27px; }
+    main { padding: 0 16px 56px; }
+    .card { padding: 22px 20px 6px; border-radius: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <div class="brand">
+      <svg viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M54,22L82,33V54C82,71.5 69.5,84.5 54,90C38.5,84.5 26,71.5 26,54V33L54,22Z" fill="#fff"/>
+        <path d="M46,50a8,8 0 1,0 16,0a8,8 0 1,0 -16,0Z" fill="#16324F"/>
+        <path d="M50.5,56h7v14h-7z" fill="#16324F"/>
+      </svg>
+      <span>Password Disk</span>
+    </div>
+    <h1>Privacy Policy</h1>
+    <div class="meta">Effective: November 4, 2026 &nbsp;·&nbsp; Last updated: November 4, 2026</div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+
+    <div class="lead">
+      <strong>In one sentence:</strong> your vault lives on your phone by default — we cannot see it and cannot decrypt it.
+      Data only leaves the device when you explicitly turn on cloud backup. The app contains no ads, analytics or profiling SDKs.
+    </div>
+
+    <p>This policy applies to <strong>Password Disk</strong> (Android package name <code>com.passworddisk.app</code>, “the App”),
+    developed and operated by [Developer name] (“we”, “us”). We process data in accordance with the Google Play User Data Policy,
+    the EU GDPR and other applicable data-protection laws.</p>
+
+    <h2>1. Information we process</h2>
+
+    <h3>1.1 Stored only on your device</h3>
+    <table>
+      <tr><th>Data</th><th>Purpose and handling</th></tr>
+      <tr>
+        <td>Master password</td>
+        <td>Unlocks your vault. <strong>We never store the master password in plaintext.</strong> Only a bcrypt hash (cost 12) is kept on the device for verification.</td>
+      </tr>
+      <tr>
+        <td>Vault entries</td>
+        <td>Title, username, password, URL, notes and category. All fields are encrypted with AES before being written to the local database; the key is derived from your master password.</td>
+      </tr>
+      <tr>
+        <td>2FA secrets and codes</td>
+        <td>Secrets stay on the device and codes are computed locally in real time. <strong>Nothing is uploaded.</strong></td>
+      </tr>
+    </table>
+
+    <h3>1.2 Uploaded only if you enable cloud backup</h3>
+    <ul>
+      <li><strong>Account username</strong> — identifies your backup space.</li>
+      <li><strong>Password hash</strong> — the server stores only a bcrypt hash, from which the plaintext cannot be recovered.</li>
+      <li><strong>Encrypted vault backup</strong> — encrypted before it leaves the device, so the server cannot read the passwords inside.</li>
+    </ul>
+    <p>This data is transmitted over HTTPS (TLS) and stored on [Cloudflare global edge network]. If you never enable cloud backup, this section does not apply.</p>
+
+    <h3>1.3 Camera permission</h3>
+    <p>Requested only when you tap “Scan QR code”, to read 2FA QR codes (<code>otpauth://</code>).
+    The viewfinder is decoded on-device; <strong>no image is stored or uploaded</strong>.
+    You can revoke the permission at any time in Android Settings; only QR scanning stops working, every other feature keeps working.</p>
+
+    <h3>1.4 What we do NOT collect</h3>
+    <ul>
+      <li>Contacts, SMS, call logs, or location (precise or approximate)</li>
+      <li>Device identifiers (IMEI, Android ID, advertising ID)</li>
+      <li>Usage analytics, click tracking, or crash reports (unless you email one to us voluntarily)</li>
+      <li>Clipboard content unrelated to the App</li>
+    </ul>
+
+    <h2>2. Permissions</h2>
+    <table>
+      <tr><th>Permission</th><th>Purpose</th><th>Required?</th></tr>
+      <tr><td>INTERNET</td><td>Only for cloud backup you explicitly start</td><td>No — the App works fully offline</td></tr>
+      <tr><td>ACCESS_NETWORK_STATE</td><td>Shows a friendly message when offline instead of failing silently</td><td>No</td></tr>
+      <tr><td>CAMERA</td><td>Scanning 2FA QR codes</td><td>No — you can type the secret manually</td></tr>
+    </table>
+    <p>We do not request storage, contacts, location, phone or SMS permissions.</p>
+
+    <h2>3. Storage and retention</h2>
+    <ul>
+      <li><strong>On-device data</strong> — kept until you delete an entry, use “Settings → Delete data”, or uninstall the App.</li>
+      <li><strong>Cloud backup</strong> — kept until you delete your account.</li>
+      <li><strong>After deletion</strong> — backups are permanently removed from production and rolling backups within 30 days.</li>
+    </ul>
+
+    <h2>4. Sharing and disclosure</h2>
+    <p>We <strong>do not sell, rent or share</strong> your personal information for advertising or marketing.
+    We disclose data only (a) with your explicit consent, or (b) when required by law or a binding order from a competent authority.</p>
+    <p>Apart from the hosting required for opt-in cloud backup, the App integrates no third-party advertising, analytics or attribution SDKs.</p>
+
+    <h2>5. Your rights</h2>
+    <ul>
+      <li><strong>Access</strong> — view every entry and category in the App at any time.</li>
+      <li><strong>Rectify</strong> — edit any entry.</li>
+      <li><strong>Delete data</strong> — “Settings → Delete data” removes every password, category and your master password from this device, together with the linked cloud account and its backup. Only the account password is required, because the username is remembered on this device; on-device data is cleared only after the server confirms deletion.</li>
+      <li><strong>Withdraw consent</strong> — uninstall the App to stop all processing, or email us.</li>
+      <li><strong>Complain</strong> — you may lodge a complaint with your local data-protection authority.</li>
+    </ul>
+
+    <h2>6. Account deletion</h2>
+    <p>Your cloud account and local data are deleted together from a single entry:</p>
+    <ul>
+      <li><strong>If you have used cloud backup</strong> — Settings → Delete data. The dialog shows the saved account name; enter that account’s password to confirm. After verification the server immediately deletes the account, its vault backup and all password records, then the on-device data is cleared.</li>
+      <li><strong>If you never used cloud backup</strong> — the same entry shows no input fields; confirming deletes this device’s passwords, categories and master password.</li>
+      <li><strong>After uninstalling or forgetting the master password</strong> — if you cannot reach Settings, email us to delete the cloud data; we verify and complete within 7 business days.</li>
+    </ul>
+    <p>No support request is required for in-app deletion and it takes effect immediately and cannot be undone.</p>
+    <p>If you already uninstalled the App but want your cloud backup removed, email
+    <a href="mailto:support@example.com">support@example.com</a> with the subject “Delete my account” and your cloud username.
+    We verify and delete within 7 business days and confirm by reply.</p>
+
+    <h2>7. Children</h2>
+    <p>The App is not directed to children under 13 (under 16 in the EEA). We do not knowingly collect personal data from children.
+    If you are a guardian and believe a child used the App without consent, contact us and we will help delete the data.</p>
+
+    <h2>8. Security measures</h2>
+    <ul>
+      <li><strong>In transit</strong> — HTTPS everywhere; cleartext HTTP is blocked at the platform level.</li>
+      <li><strong>At rest</strong> — AES encryption for entries, key material protected by the Android Keystore.</li>
+      <li><strong>Screenshots</strong> — production builds set <code>FLAG_SECURE</code>, blocking screenshots, screen recording and recent-task thumbnails.</li>
+      <li><strong>Clipboard</strong> — copied passwords are flagged as sensitive on Android 13+ and cleared after 60 seconds.</li>
+      <li><strong>No secret logging</strong> — release builds never log passwords or backup content.</li>
+    </ul>
+    <p>Please keep your master password safe. <strong>If you lose it, we cannot recover your vault</strong> — that is the unavoidable cost of end-to-end encryption.</p>
+
+    <h2>9. Changes to this policy</h2>
+    <p>When this policy changes we update this page and the in-app link, and revise the “Last updated” date.
+    For material changes to purposes or processing we will notify you prominently in the App and, where required, ask for consent again.</p>
+
+    <h2>10. Contact</h2>
+    <p>Developer: [Developer name]<br>
+    Email: <a href="mailto:support@example.com">support@example.com</a><br>
+    We usually reply within 7 business days.</p>
+
+  </div>
+</main>
+
+<footer>© 2026 Password Disk. This page may be saved or printed for your records.</footer>
+
+</body>
+</html>

@@ -1,12 +1,19 @@
 package com.passworddisk.app.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
-import android.view.*
-import android.widget.EditText
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -14,23 +21,30 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.passworddisk.app.R
 import com.passworddisk.app.data.Category
 import com.passworddisk.app.data.PasswordItem
 import com.passworddisk.app.databinding.FragmentHomeBinding
+import com.passworddisk.app.databinding.SheetActionsBinding
 import com.passworddisk.app.viewmodel.PasswordViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
     private val viewModel: PasswordViewModel by activityViewModels()
+
     private lateinit var passwordAdapter: PasswordAdapter
     private var categories: List<Category> = emptyList()
     private var passwords: List<PasswordItem> = emptyList()
-    private var currentCategoryId: String = "1"
+    private var currentCategoryId: String = ALL_CATEGORY_ID
+    private var query: String = ""
+    private var rebuildingChips = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +52,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -46,134 +59,66 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        setupTabLayout()
-        setupFab()
+        setupSearch()
+        setupActions()
+        setupDetailResultListener()
         observeData()
     }
 
     private fun setupRecyclerView() {
         passwordAdapter = PasswordAdapter(
-            onItemClick = { password ->
-                showPasswordDetails(password)
-            },
-            onCopyClick = { password ->
-                copyPassword(password)
-            },
-            onEditClick = { password ->
-                editPassword(password)
-            },
-            onDeleteClick = { password ->
-                confirmDeletePassword(password)
-            }
+            onItemClick = { openDetail(it) },
+            onCopyClick = { copyPassword(it) },
+            onMoreClick = { anchor, item -> showItemMenu(anchor, item) }
         )
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = passwordAdapter
+            setHasFixedSize(false)
         }
     }
 
-    private fun setupTabLayout() {
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    val categoryId = it.tag as? String ?: "1"
-                    currentCategoryId = categoryId
-                    filterPasswords()
-                }
+    private fun setupSearch() {
+        binding.searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: Editable?) {
+                query = s?.toString().orEmpty()
+                binding.clearSearch.isVisible = query.isNotEmpty()
+                applyFilter()
             }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-    }
-
-    private fun setupFab() {
-        binding.fabAdd.setOnClickListener {
-            showFabMenu()
+        binding.clearSearch.setOnClickListener {
+            binding.searchInput.setText("")
+            binding.searchInput.clearFocus()
+            hideKeyboard()
         }
-    }
-
-    private fun showFabMenu() {
-        val popupMenu = PopupMenu(requireContext(), binding.fabAdd)
-        popupMenu.inflate(R.menu.menu_fab)
-        
-        // Force show icons
-        try {
-            val field = PopupMenu::class.java.getDeclaredField("mPopup")
-            field.isAccessible = true
-            val menuPopupHelper = field.get(popupMenu)
-            val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
-            val setForceShowIcon = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.java)
-            setForceShowIcon.invoke(menuPopupHelper, true)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        
-        popupMenu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_add_password -> {
-                    findNavController().navigate(R.id.action_home_to_addPassword)
-                    true
-                }
-                R.id.action_add_category -> {
-                    showAddCategoryDialog()
-                    true
-                }
-                R.id.action_totp_generator -> {
-                    findNavController().navigate(R.id.action_home_to_totp)
-                    true
-                }
-                else -> false
+        binding.searchInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                hideKeyboard()
+                true
+            } else {
+                false
             }
         }
-        
-        // Show the menu
-        popupMenu.show()
+        binding.lockBadge.setOnClickListener { confirmLock() }
     }
 
-    private fun showAddCategoryDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_category, null)
-        val nameInput = dialogView.findViewById<EditText>(R.id.categoryNameInput)
-        val iconButton = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.categoryIconButton)
-        
-        var selectedIcon = "📁"
-        
-        iconButton.setOnClickListener {
-            showIconSelector {icon ->
-                selectedIcon = icon
-                iconButton.text = icon
+    private fun setupActions() {
+        binding.fabAdd.setOnClickListener { showQuickActions() }
+    }
+
+    private fun setupDetailResultListener() {
+        childFragmentManager.setFragmentResultListener(
+            PasswordDetailSheet.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val id = bundle.getString(PasswordDetailSheet.ID_KEY).orEmpty()
+            when (bundle.getString(PasswordDetailSheet.ACTION_KEY)) {
+                PasswordDetailSheet.ACTION_EDIT -> navigateToEdit(id)
+                PasswordDetailSheet.ACTION_DELETE -> passwords.find { it.id == id }?.let { confirmDelete(it) }
             }
         }
-        
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.add_category_title))
-            .setView(dialogView)
-            .setPositiveButton(getString(R.string.add_category)) { _, _ ->
-                val name = nameInput.text.toString().trim()
-
-                if (name.isNotEmpty()) {
-                    viewModel.addCategory(name, selectedIcon)
-                }
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
-    }
-
-    private fun showIconSelector(onIconSelected: (String) -> Unit) {
-        val icons = listOf(
-            "📁", "👤", "💼", "💰", "📱", "🏠", "🔒", "📧",
-            "🌐", "🎮", "📚", "🎨", "🔧", "🚗", "✈️", "⚡"
-        )
-        
-        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, icons)
-        
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.select_icon))
-            .setAdapter(adapter) { dialog, position ->
-                onIconSelected(icons[position])
-                dialog.dismiss()
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
     }
 
     private fun observeData() {
@@ -182,13 +127,15 @@ class HomeFragment : Fragment() {
                 launch {
                     viewModel.allCategories.collect { cats ->
                         categories = cats
-                        updateTabs()
+                        rebuildChips()
+                        passwordAdapter.setCategoryNames(cats.associate { it.id to it.name })
+                        applyFilter()
                     }
                 }
                 launch {
-                    viewModel.allPasswords.collect { pwds ->
-                        passwords = pwds
-                        filterPasswords()
+                    viewModel.allPasswords.collect { items ->
+                        passwords = items
+                        applyFilter()
                     }
                 }
             }
@@ -196,125 +143,235 @@ class HomeFragment : Fragment() {
 
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                snackbar(it, Notify.Kind.SUCCESS)
+                viewModel.clearMessages()
+            }
+        }
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                snackbar(it, Notify.Kind.ERROR)
                 viewModel.clearMessages()
             }
         }
     }
 
-    private fun updateTabs() {
-        binding.tabLayout.removeAllTabs()
-        categories.forEach { category ->
-            val tab = binding.tabLayout.newTab().apply {
-                text = "${category.icon} ${category.name}"
-                tag = category.id
-            }
-            binding.tabLayout.addTab(tab)
+    private fun rebuildChips() {
+        rebuildingChips = true
+        binding.chipGroup.removeAllViews()
+
+        val entries = mutableListOf<Pair<String, String>>()
+        entries += ALL_CATEGORY_ID to getString(R.string.all)
+        categories.filter { it.id != ALL_CATEGORY_ID }.forEach { entries += it.id to it.name }
+
+        if (entries.none { it.first == currentCategoryId }) {
+            currentCategoryId = ALL_CATEGORY_ID
         }
+
+        entries.forEach { (id, label) ->
+            val chip = Chip(requireContext()).apply {
+                text = label
+                isCheckable = true
+                isChecked = id == currentCategoryId
+                tag = id
+                setOnClickListener { /* handled by ChipGroup */ }
+            }
+            binding.chipGroup.addView(chip)
+        }
+
+        binding.chipGroup.setOnCheckedStateChangeListener { group, _ ->
+            if (rebuildingChips) return@setOnCheckedStateChangeListener
+            val checked = group.checkedChipId
+            if (checked == View.NO_ID) return@setOnCheckedStateChangeListener
+            val id = group.findViewById<Chip>(checked)?.tag as? String ?: return@setOnCheckedStateChangeListener
+            if (id == currentCategoryId) return@setOnCheckedStateChangeListener
+            currentCategoryId = id
+            applyFilter()
+        }
+
+        rebuildingChips = false
     }
 
-    private fun filterPasswords() {
-        passwords.forEachIndexed { index, password ->
-            println("Password $index: id=${password.id}, title=${password.title}, username=${password.username}, password=${password.password?.take(10)}..., category=${password.categoryId}")
-        }
-        val filtered = if (currentCategoryId == "1") {
+    private fun applyFilter() {
+        val byCategory = if (currentCategoryId == ALL_CATEGORY_ID) {
             passwords
         } else {
             passwords.filter { it.categoryId == currentCategoryId }
         }
+
+        val keyword = query.trim()
+        val filtered = if (keyword.isEmpty()) {
+            byCategory
+        } else {
+            byCategory.filter {
+                it.title.contains(keyword, ignoreCase = true) ||
+                    it.username.contains(keyword, ignoreCase = true) ||
+                    it.url.contains(keyword, ignoreCase = true) ||
+                    it.notes.contains(keyword, ignoreCase = true)
+            }
+        }
+
         passwordAdapter.submitList(filtered)
-        binding.emptyView.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
-    }
 
-    private fun showPasswordDetails(password: PasswordItem) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val decryptedPassword = viewModel.decryptPassword(password.password)
-            decryptedPassword?.let {
-                val dialog = MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(password.title)
-                    .setMessage("""
-                        ${getString(R.string.username_label, password.username)}
-                        ${getString(R.string.password_label, it)}
-                        ${getString(R.string.url_label, password.url)}
-                        ${getString(R.string.notes_label, password.notes)}
-                    """.trimIndent())
-                    .setPositiveButton(getString(R.string.ok), null)
-                    .setNeutralButton(getString(R.string.copy_password_button)) { _, _ ->
-                        copyToClipboard(it)
-                    }
-                    .create()
-                dialog.show()
+        // 空库时标题下就不再显示“共 0 条记录”，画面更干净
+        binding.countText.isVisible = passwords.isNotEmpty()
+        binding.countText.text = if (keyword.isNotEmpty()) {
+            getString(R.string.record_count_label, filtered.size)
+        } else {
+            getString(R.string.count_records, byCategory.size)
+        }
+
+        when {
+            filtered.isNotEmpty() -> {
+                binding.emptyView.isVisible = false
+                binding.recyclerView.isVisible = true
+            }
+            passwords.isEmpty() -> {
+                binding.emptyView.isVisible = true
+                binding.recyclerView.isVisible = false
+                binding.emptyTitle.text = getString(R.string.empty_vault_title)
+                binding.emptyDesc.text = getString(R.string.empty_vault_desc)
+            }
+            else -> {
+                binding.emptyView.isVisible = true
+                binding.recyclerView.isVisible = false
+                binding.emptyTitle.text = getString(R.string.empty_search_title)
+                binding.emptyDesc.text = getString(R.string.empty_search_desc)
             }
         }
     }
 
-    private fun copyPassword(password: PasswordItem) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val decryptedPassword = viewModel.decryptPassword(password.password)
-            decryptedPassword?.let {
-                copyToClipboard(it)
+    private fun showQuickActions() {
+        val dialog = BottomSheetDialog(requireContext())
+        val sheet = SheetActionsBinding.inflate(layoutInflater)
+        dialog.setContentView(sheet.root)
+        Ui.applyNavBarInset(sheet.root, 10)
+
+        sheet.actionAddPassword.setOnClickListener {
+            dialog.dismiss()
+            findNavController().navigate(R.id.action_home_to_addPassword)
+        }
+        sheet.actionAddCategory.setOnClickListener {
+            dialog.dismiss()
+            findNavController().navigate(R.id.action_home_to_categories)
+        }
+        sheet.actionTotp.setOnClickListener {
+            dialog.dismiss()
+            findNavController().navigate(R.id.action_home_to_totp)
+        }
+
+        dialog.show()
+    }
+
+    private fun showItemMenu(anchor: View, item: PasswordItem) {
+        val popup = PopupMenu(requireContext(), anchor)
+        popup.menu.add(0, MENU_COPY, 0, getString(R.string.copy_password))
+        popup.menu.add(0, MENU_EDIT, 1, getString(R.string.edit))
+        popup.menu.add(0, MENU_DELETE, 2, getString(R.string.delete_password))
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                MENU_COPY -> {
+                    copyPassword(item)
+                    true
+                }
+                MENU_EDIT -> {
+                    navigateToEdit(item.id)
+                    true
+                }
+                MENU_DELETE -> {
+                    confirmDelete(item)
+                    true
+                }
+                else -> false
             }
         }
+        popup.show()
     }
 
-    private fun copyToClipboard(text: String) {
-        val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-        val clip = android.content.ClipData.newPlainText(getString(R.string.password_hint), text)
-        clipboard.setPrimaryClip(clip)
-        Toast.makeText(requireContext(), getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
-    }
-
-    private fun editPassword(password: PasswordItem) {
-        val bundle = Bundle().apply {
-            putString("passwordId", password.id)
+    private fun openDetail(item: PasswordItem) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val plain = viewModel.decryptPassword(item.password)
+            if (plain == null) {
+                snackbar(getString(R.string.unknown_error))
+                return@launch
+            }
+            val categoryName = categories.firstOrNull { it.id == item.categoryId }?.name.orEmpty()
+            PasswordDetailSheet.newInstance(
+                id = item.id,
+                title = item.title,
+                username = item.username,
+                password = plain,
+                url = item.url,
+                notes = item.notes,
+                category = categoryName
+            ).show(childFragmentManager, "password_detail")
         }
-        findNavController().navigate(R.id.action_home_to_editPassword, bundle)
     }
 
-    private fun confirmDeletePassword(password: PasswordItem) {
+    private fun copyPassword(item: PasswordItem) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val plain = viewModel.decryptPassword(item.password)
+            if (plain == null) {
+                snackbar(getString(R.string.unknown_error))
+                return@launch
+            }
+            SecureUi.copySensitive(
+                requireContext(),
+                getString(R.string.password_hint),
+                plain
+            )
+            snackbar(getString(R.string.copied_to_clipboard))
+        }
+    }
+
+    private fun navigateToEdit(id: String) {
+        findNavController().navigate(
+            R.id.action_home_to_editPassword,
+            Bundle().apply { putString("passwordId", id) }
+        )
+    }
+
+    private fun confirmDelete(item: PasswordItem) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.delete_password_title))
-            .setMessage(getString(R.string.delete_password_message, password.title))
-            .setPositiveButton(getString(R.string.delete_password)) { _, _ ->
-                viewModel.deletePassword(password)
-            }
+            .setMessage(getString(R.string.delete_password_message, item.title))
             .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.delete_password)) { _, _ ->
+                viewModel.deletePassword(item)
+            }
             .show()
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_home, menu)
-
-        val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = false
-            override fun onQueryTextChange(newText: String?): Boolean {
-                // Implement search functionality
-                return true
+    private fun confirmLock() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.lock_vault))
+            .setMessage(getString(R.string.logout_confirm))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.lock_vault)) { _, _ ->
+                viewModel.logout()
+                findNavController().navigate(R.id.action_settings_to_auth)
             }
-        })
+            .show()
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                findNavController().navigate(R.id.action_home_to_settings)
-                true
-            }
-            R.id.action_logout -> {
-                viewModel.logout()
-                findNavController().navigate(R.id.action_home_to_auth)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
+    private fun snackbar(message: String, kind: Notify.Kind = Notify.Kind.INFO) {
+        if (_binding == null) return
+        Notify.show(binding.root, message, kind)
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.hideSoftInputFromWindow(binding.searchInput.windowToken, 0)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private companion object {
+        const val ALL_CATEGORY_ID = "1"
+        const val MENU_COPY = 100
+        const val MENU_EDIT = 101
+        const val MENU_DELETE = 102
     }
 }

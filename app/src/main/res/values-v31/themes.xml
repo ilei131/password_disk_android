@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      Android 12+ 使用系统 SplashScreen API。
+      这里把系统启动画面的底色固定为品牌深蓝、图标使用应用图标，
+      避免渐变 viewport 不被识别而出现白屏闪一下。
+    -->
+    <style name="Theme.PasswordDisk.Splash" parent="Theme.PasswordDisk">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <item name="android:windowSplashScreenBackground">@color/brand_navy</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashScreenAnimationDuration">180</item>
+    </style>
+
+</resources>

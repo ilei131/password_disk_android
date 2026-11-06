@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 512px; height: 512px; overflow: hidden;
+    background: #16324F;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  .glow {
+    position: absolute; width: 640px; height: 640px; left: -64px; top: -64px;
+    background: radial-gradient(circle at 50% 46%, rgba(14,159,110,0.34) 0%, rgba(14,159,110,0) 62%);
+  }
+  .sheen {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 46%);
+  }
+  .mark { position: relative; width: 300px; height: 300px; }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="sheen"></div>
+  <div class="mark">
+    <svg viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+      <path d="M54,22L82,33V54C82,71.5 69.5,84.5 54,90C38.5,84.5 26,71.5 26,54V33L54,22Z" fill="#FFFFFF"/>
+      <path d="M46,50a8,8 0 1,0 16,0a8,8 0 1,0 -16,0Z" fill="#16324F"/>
+      <path d="M50.5,56h7v14h-7z" fill="#16324F"/>
+      <circle cx="54" cy="50" r="4.5" fill="#0E9F6E"/>
+    </svg>
+  </div>
+</body>
+</html>

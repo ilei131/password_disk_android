@@ -9,3 +9,12 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# 签名与密钥，严禁入库
+keystore.properties
+*.jks
+*.keystore
+/key.jks
+
+# 上架素材生成过程的中间文件
+/screenshots/tmp

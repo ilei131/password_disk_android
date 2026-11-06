@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_sheet_top"
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="20dp">
+
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_sheet_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="@string/generate_password_title"
+        android:textAppearance="@style/TextAppearance.PasswordDisk.Headline"
+        android:textColor="?attr/colorOnSurface" />
+
+    <!-- 生成结果 -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.PasswordDisk.Card.Solid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="14dp">
+
+            <TextView
+                android:id="@+id/generatedPasswordText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.03"
+                android:lineSpacingExtra="4dp"
+                android:text="@string/password_placeholder_dots"
+                android:textColor="?attr/colorOnSurface"
+                android:textIsSelectable="true"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/refreshButton"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/regenerate"
+                android:src="@drawable/ic_refresh"
+                app:tint="?attr/colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/copyGeneratedButton"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/copy_password"
+                android:src="@drawable/ic_copy"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 强度 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/strengthLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/strength_unknown"
+            android:textAppearance="@style/TextAppearance.PasswordDisk.Caption"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <TextView
+            android:id="@+id/lengthValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="16"
+            android:textAppearance="@style/TextAppearance.PasswordDisk.Caption"
+            android:textColor="?attr/colorPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:text="@string/chars_unit"
+            android:textAppearance="@style/TextAppearance.PasswordDisk.Caption" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/strengthBar"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/strengthSeg1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:background="@color/color_outline" />
+
+        <View
+            android:id="@+id/strengthSeg2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:background="@color/color_outline" />
+
+        <View
+            android:id="@+id/strengthSeg3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:background="@color/color_outline" />
+
+        <View
+            android:id="@+id/strengthSeg4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/color_outline" />
+
+    </LinearLayout>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/lengthSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:stepSize="1"
+        android:value="16"
+        android:valueFrom="8"
+        android:valueTo="32" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/uppercaseCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:minHeight="46dp"
+        android:text="@string/include_uppercase"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/lowercaseCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:minHeight="46dp"
+        android:text="@string/include_lowercase"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/numbersCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:minHeight="46dp"
+        android:text="@string/include_numbers"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/symbolsCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:minHeight="46dp"
+        android:text="@string/include_symbols"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/generateButton"
+        style="@style/Widget.PasswordDisk.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/use_this_password"
+        app:icon="@drawable/ic_check" />
+
+</LinearLayout>

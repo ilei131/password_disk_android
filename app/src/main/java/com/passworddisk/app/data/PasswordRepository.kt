@@ -101,6 +101,22 @@ class PasswordRepository(
         salt = null
     }
 
+    /**
+     * 清空整个密码库：全部密码、分类、主密码设置与内存中的密钥。
+     * 用于「删除账号与全部数据」，满足 Google Play 的数据删除要求。
+     */
+    suspend fun wipeAll(): Boolean {
+        return try {
+            passwordDao.deleteAllPasswords()
+            categoryDao.deleteAllCategories()
+            vaultSettingsDao.deleteAll()
+            logout()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun addPassword(
         title: String,
         username: String,
@@ -242,12 +258,6 @@ class PasswordRepository(
             val gson = Gson()
             val backup = gson.fromJson(backupJson, CloudBackup::class.java)
 
-            // Log backup data
-            println("Backup data received: passwords count = ${backup.passwords.size}, categories count = ${backup.categories.size}")
-//            backup.passwords.forEachIndexed { index, password ->
-//                println("Password $index: id=${password.id}, title=${password.title}, username=${password.username}, password=${password.password?.take(10)}..., category=${password.category}")
-//            }
-
             // Restore categories
             val categoryMap = mutableMapOf<String, String>() // category name to id mapping
             backup.categories.forEach { cloudCategory ->
@@ -258,14 +268,12 @@ class PasswordRepository(
                 )
                 categoryDao.insertCategory(category)
                 categoryMap[cloudCategory.name] = cloudCategory.id
-                println("Added category: ${cloudCategory.name} (${cloudCategory.id})")
             }
 
             // Restore passwords
             backup.passwords.forEach { cloudPassword ->
                 // Get category ID from category name
                 val categoryId = categoryMap[cloudPassword.category] ?: "1" // Default to "所有"
-                println("Processing password: ${cloudPassword.title}, category=${cloudPassword.category}, categoryId=$categoryId")
                 
                 val passwordItem = PasswordItem(
                     id = cloudPassword.id,
@@ -279,7 +287,6 @@ class PasswordRepository(
                     updatedAt = cloudPassword.updatedAt
                 )
                 passwordDao.insertPassword(passwordItem)
-                println("Added password: ${passwordItem.title}, encryptedPassword=${passwordItem.password?.take(10)}...")
             }
 
             // Restore settings
@@ -295,11 +302,8 @@ class PasswordRepository(
             // Note: We don't have the master password here, so masterKey remains null
             // The user will need to login again to get the master key
 
-            println("Restore completed successfully")
             true
         } catch (e: Exception) {
-            e.printStackTrace()
-            println("Restore failed: ${e.message}")
             false
         }
     }
