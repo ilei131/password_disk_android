@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Password Disk</string>
+    <string name="app_name">PDisk</string>
     <string name="login_title">Welcome Back</string>
     <string name="register_title">Create Vault</string>
     <string name="master_password_hint">Master Password</string>
@@ -178,7 +178,7 @@
     <string name="cloud_sync_row_desc">Pull and restore from cloud</string>
     <string name="backup_row_desc">Upload current vault</string>
     <string name="lock_vault">Lock vault</string>
-    <string name="version_label">Password Disk %1$s</string>
+    <string name="version_label">PDisk %1$s</string>
     <string name="categories_subtitle">Group entries so they are easier to find</string>
     <string name="no_categories_hint">No custom categories yet.\nTap the button below to add one.</string>
     <string name="totp_page_desc">Scan a QR code or paste a Base32 secret, and get a code that refreshes every 30 seconds.</string>
@@ -215,13 +215,12 @@
     <string name="privacy_policy">Privacy policy</string>
     <string name="privacy_policy_desc">How we collect, use and protect your data</string>
     <string name="terms_of_service">Terms of service</string>
-    <string name="terms_of_service_desc">Rules for using Password Disk</string>
+    <string name="terms_of_service_desc">Rules for using PDisk</string>
     <string name="link_open_failed">No browser is available to open this link</string>
 
-    <!-- ===== 外部链接：发布前替换成你自己的站点地址 ===== -->
-    <string name="privacy_policy_url" translatable="false">https://example.com/password-disk/privacy</string>
-    <string name="terms_url" translatable="false">https://example.com/password-disk/terms</string>
-    <string name="support_email" translatable="false">support@example.com</string>
+    <!-- ===== 外部链接：隐私政策与服务条款已发布到 openwit.net ===== -->
+    <string name="privacy_policy_url" translatable="false">https://openwit.net/posts/pdisk-privacy</string>
+    <string name="terms_url" translatable="false">https://openwit.net/posts/pdisk-service</string>
     <string name="legal_consent_note">By continuing, you agree to our Privacy Policy and Terms of Service</string>
     <!-- ===== 删除数据：本机 + 云端一起删 ===== -->
     <string name="delete_data">Delete data</string>

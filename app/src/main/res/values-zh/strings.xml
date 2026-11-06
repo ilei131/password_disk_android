@@ -178,7 +178,7 @@
     <string name="cloud_sync_row_desc">从云端拉取并恢复密码库</string>
     <string name="backup_row_desc">把当前保险库上传到云端</string>
     <string name="lock_vault">锁定保险库</string>
-    <string name="version_label">Password Disk %1$s</string>
+    <string name="version_label">PDisk %1$s</string>
     <string name="categories_subtitle">为记录建立分类，让查找更快</string>
     <string name="no_categories_hint">还没有自定义分类\n点击右下角新建一个</string>
     <string name="totp_page_desc">扫描二维码或粘贴 Base32 密钥，生成每 30 秒刷新一次的动态验证码。</string>

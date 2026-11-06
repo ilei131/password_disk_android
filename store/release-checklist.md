@@ -15,16 +15,26 @@
 
 ## 1. 发布前必须替换的占位内容
 
-| 位置 | 占位值 | 替换为 |
+| 位置 | 状态 | 值 / 说明 |
 | --- | --- | --- |
-| `app/src/main/res/values/strings.xml` → `privacy_policy_url` | `https://example.com/password-disk/privacy` | 你托管后的隐私政策页地址 |
-| `app/src/main/res/values/strings.xml` → `terms_url` | `https://example.com/password-disk/terms` | 你托管后的服务条款页地址 |
-| `app/src/main/res/values/strings.xml` → `support_email` | `support@example.com` | 你的联系邮箱 |
-| `store/privacy-policy-zh.html` / `-en.html` | 【开发者名称】【support@example.com】【Cloudflare 全球边缘网络】 | 同上 |
-| `store/terms-zh.html` / `-en.html` | 同上 | 同上 |
+| `app/src/main/res/values/strings.xml` → `privacy_policy_url` | ✅ 已填 | `https://openwit.net/posts/pdisk-privacy` |
+| `app/src/main/res/values/strings.xml` → `terms_url` | ✅ 已填 | `https://openwit.net/posts/pdisk-service` |
+| `app/src/main/res/values/strings.xml` → `support_email` | ⚠️ 待填 | 目前仍是 `support@example.com`，需替换为你的联系邮箱 |
+| `store/privacy-policy-zh.html` / `-en.html` | ⚠️ 待填 | 【开发者名称】【support@example.com】【Cloudflare 全球边缘网络】 |
+| `store/terms-zh.html` / `-en.html` | ⚠️ 待填 | 同上 |
+| `store/privacy-policy.md` / `terms-of-service.md` | ⚠️ 待填 | 同上（Markdown 版，英文在前、中文在后） |
+| Play 管理中心 → 应用内容 → 隐私政策 | ⚠️ 待填 | 填 `https://openwit.net/posts/pdisk-privacy` 即可，与站内页面同源 |
 
-托管建议：直接把这 4 个 HTML 文件传到你的站点静态目录即可，无外部依赖、移动端自适应、可打印。
-例如 `https://your-domain.com/password-disk/privacy`（中文）与 `/en/privacy`（英文）。
+已在 `openwit.net` 上线的页面：
+
+- 隐私政策：<https://openwit.net/posts/pdisk-privacy>
+- 服务条款：<https://openwit.net/posts/pdisk-service>
+
+这两行 URL 同时被应用内「设置 → 隐私与数据」与启动页的法律提示引用，改动只需动 `strings.xml` 一处。
+
+Markdown 版（`store/privacy-policy.md`、`store/terms-of-service.md`）内容与 HTML 版一致，一份文件同时包含中英两版：
+英文在上、中文在下，中间用水平分割线隔开。适合仓库内直接阅读，或交给支持 Markdown 的站点/文档平台渲染——
+`openwit.net` 上的两篇文章即由这两个文件发布而来，后续更新时记得同步回仓库。
 
 ---
 
